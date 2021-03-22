@@ -1,4 +1,13 @@
 <title>Research Group Showroom: test version</title>
+{% if session.username %}
+<p>You are logged in.</p>
+{% else %}
+<form action="/login" method="POST">
+	<p>Username: <input type="text" name="username"></p>
+	<p>Password: <input type="password" name="password"></p>
+	<p><input type="submit" value="Login"></p>
+</form>
+{% endif %}
 <h1>{{ name }}</h1>
 <p>{{ introductory_text }}
 
