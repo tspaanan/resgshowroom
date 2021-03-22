@@ -1,4 +1,4 @@
-#Research Group Showroom
+# Research Group Showroom
 
 Helsingin yliopiston tietojenkäsittelytieteen laitoksen keväällä 2021 järjestämän harjoituskurssin 'Tietokantasovellus' harjoitustyö.
 
