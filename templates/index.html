@@ -10,6 +10,17 @@
 	<p><input type="submit" value="Login"></p>
 </form>
 {% endif %}
-<h1>{{ name }}</h1>
+<h1>
+{{ name }}
+{% if allow_pi %}
+	<form action="/change_text" method="POST">
+		<input type="submit" name="change_name" value="Change">
+	</form>
+{% endif %}
+</h1>
 <p>{{ introductory_text }}
-
+{% if allow_pi %}
+	<form action="/change_text" method="POST">
+		<input type="submit" name="change_introduction" value="Change">
+	</form>
+{% endif %}

@@ -1,0 +1,15 @@
+{% if allow_pi and form == "change_name" %}
+<form action="/update" method="POST">
+    Give research group a new name:    
+    <input type="text" name="changed_name">
+    <input type="submit" value="Change">
+</form>
+{% elif allow_pi and form == "change_introduction" %}
+<form action="/update" method="POST">
+    Change the introductory text:
+    <textarea name="changed_introduction" rows="20" cols="80"></textarea>
+    <input type="submit" value="Change">
+</form>
+{% else %}
+    ei PI
+{% endif %}

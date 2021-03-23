@@ -10,6 +10,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
+import check_credentials
+
 @app.route("/")
 def index():
     result = db.session.execute("SELECT title FROM pages WHERE id=1")
@@ -17,9 +19,11 @@ def index():
     result = db.session.execute("SELECT introduction FROM pages WHERE id=1")
     introductory_text = result.fetchone()[0]
     #tarkistetaan oikeudet: PI voi muuttaa nimeä
-    #if is_pi():
-        #print("is pi")
-    return render_template("index.html", name=name, introductory_text=introductory_text)
+    allow_pi = False
+    if check_credentials.is_pi(db, session):
+        allow_pi = True
+    return render_template("index.html", name=name, introductory_text=introductory_text, \
+                            allow_pi=allow_pi)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -49,3 +53,27 @@ def login():
 def logout():
     del session["username"]
     return redirect("/")
+
+@app.route("/change_text", methods=["POST"])
+def change_text():
+    if "change_name" in request.form:
+        allow_pi = check_credentials.is_pi(db, session)
+        return render_template("change_text.html", allow_pi=allow_pi, form="change_name")
+    elif "change_introduction" in request.form:
+        allow_pi = check_credentials.is_pi(db, session)
+        return render_template("change_text.html", allow_pi=allow_pi, form="change_introduction")
+
+@app.route("/update", methods=["POST"])
+def update():
+    if "changed_name" in request.form:
+        new_title = request.form["changed_name"]
+        sql = "UPDATE pages SET title=:new_title WHERE id=1"
+        db.session.execute(sql, {"new_title":new_title})
+        db.session.commit()
+        return redirect("/")
+    elif "changed_introduction" in request.form:
+        new_introduction = request.form["changed_introduction"]
+        sql = "UPDATE pages set introduction=:new_introduction WHERE id=1"
+        db.session.execute(sql, {"new_introduction":new_introduction})
+        db.session.commit()
+        return redirect("/")
