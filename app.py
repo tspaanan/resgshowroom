@@ -65,6 +65,7 @@ def change_text():
 
 @app.route("/update", methods=["POST"])
 def update():
+    #TODO: credentials checking before updating
     if "changed_name" in request.form:
         new_title = request.form["changed_name"]
         sql = "UPDATE pages SET title=:new_title WHERE id=1"
@@ -77,3 +78,16 @@ def update():
         db.session.execute(sql, {"new_introduction":new_introduction})
         db.session.commit()
         return redirect("/")
+    elif "new_name" in request.form:
+        new_name = request.form["new_name"]
+        sql = "INSERT INTO pages (title) VALUES (:new_name)"
+        db.session.execute(sql, {"new_name":new_name})
+        db.session.commit()
+        #TODO: redirect to newly created page instead of root
+        return redirect("/")
+
+@app.route("/new_page")
+def new_page():
+    #TODO: credentials checking before access
+    #if personal page already exists, redirect there
+    return render_template("new_page.html")

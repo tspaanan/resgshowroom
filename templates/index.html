@@ -24,3 +24,15 @@
 		<input type="submit" name="change_introduction" value="Change">
 	</form>
 {% endif %}
+<p>Linkkejä alisivuille:
+	<ul>
+		<li>linkki1</li>
+		<li>linkki2</li>
+		<li>linkki3</li>
+	</ul>
+	{% if allow_pi or allow_member %}
+	<form action="/new_page">
+		<input type="submit" name="add_new_page" value="Add new personal page">
+	</form>
+	{% endif %}
+</p>
