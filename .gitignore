@@ -1,4 +1,9 @@
 .env
-__pycache__
+*.swp
 .vscode/
+__pycache__
+courseMaterial/
 python3virtuaalienv/
+staticTest/
+templatesTest/
+test.py
