@@ -1,6 +1,8 @@
 <title>Research Group Showroom: test version</title>
 {% if session.username %}
-<p>You are logged in.</p>
+<p>You are logged in. <form action="/logout">
+	<input type="submit" value="Logout">
+</form></p>
 {% else %}
 <form action="/login" method="POST">
 	<p>Username: <input type="text" name="username"></p>
