@@ -19,15 +19,16 @@ def index():
     result = db.session.execute("SELECT introduction FROM pages WHERE id=1")
     introductory_text = result.fetchone()[0]
     
-    #checking credentials: PI can change everything
-    allow_pi = False
-    if check_credentials.is_pi(db, session):
-        allow_pi = True
+    #checking credentials: only PI can change everything, members can add their own personal pages
+    allow_pi = check_credentials.is_pi(db, session)
+    allow_member = check_credentials.is_member(db, session)
 
+    #fetching links to all the member pages
     result = db.session.execute("SELECT id FROM pages WHERE id>2")
     subpages_id = result.fetchall()
+    
     return render_template("index.html", name=name, introductory_text=introductory_text, \
-                            allow_pi=allow_pi, subpages_id=subpages_id)
+                            allow_pi=allow_pi, allow_member=allow_member, subpages_id=subpages_id)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -35,23 +36,15 @@ def login():
     password = request.form["password"]
     sql = "SELECT password FROM users WHERE username=:username"
     result = db.session.execute(sql, {"username":username})
-    user = result.fetchone()
-    if user == None:
-        #TODO: not user -> link to "/"
-        pass
+    user_password = result.fetchone()
+    if user_password == None:
+        return render_template("error.html", error="no_user")
     else:
-        #testing password w/o hashing
-        #works!
-        #if user[0] == password:
-            #session["username"] = username
-            #return redirect("/")
-        if check_password_hash(user[0],password):
+        if check_password_hash(user_password[0],password):
             session["username"] = username
             return redirect("/")
         else:
-            #TODO: not password -> link to "/"
-            pass
-    return redirect("/")
+            return render_template("error.html", error="wrong_password")
 
 @app.route("/logout")
 def logout():
@@ -60,56 +53,68 @@ def logout():
 
 @app.route("/change_text", methods=["POST"])
 def change_text():
+    allow_pi = check_credentials.is_pi(db, session)
+    allow_member = check_credentials.is_member(db, session)
+    page_id = request.form["page_id"]
     if "change_name" in request.form:
-        print("change_name haara valittu")
-        allow_pi = check_credentials.is_pi(db, session)
-        page_id = request.form["page_id"]
-        print(page_id)
-        return render_template("change_text.html", allow_pi=allow_pi, form="change_name", page_id=page_id)
+        return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="change_name", page_id=page_id)
     elif "change_introduction" in request.form:
-        allow_pi = check_credentials.is_pi(db, session)
-        page_id = request.form["page_id"]
-        return render_template("change_text.html", allow_pi=allow_pi, form="change_introduction", page_id=page_id)
+        return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="change_introduction", page_id=page_id)
 
 @app.route("/update", methods=["POST"])
 def update():
-    #TODO: credentials checking before updating, everytime!!!
     if "changed_name" in request.form:
         new_title = request.form["changed_name"]
         page_id = request.form["page_id"]
-        sql = "UPDATE pages SET title=:new_title WHERE id=:page_id"
-        db.session.execute(sql, {"new_title":new_title, "page_id":page_id})
-        db.session.commit()
-        if page_id == 1:
-            return redirect("/")
-        else:
-            return redirect("member_page/" + str(page_id))
+        if check_credentials.check_page_ownership(db, session, page_id):
+            sql = "UPDATE pages SET title=:new_title WHERE id=:page_id"
+            db.session.execute(sql, {"new_title":new_title, "page_id":page_id})
+            db.session.commit()
+            if page_id == "1": return redirect("/")
+            else: return redirect("member_page/" + str(page_id))
+        else: return render_template("error.html", error="insufficient credentials")
     elif "changed_introduction" in request.form:
         new_introduction = request.form["changed_introduction"]
         page_id = request.form["page_id"]
-        sql = "UPDATE pages SET introduction=:new_introduction WHERE id=:page_id"
-        db.session.execute(sql, {"new_introduction":new_introduction, "page_id":page_id})
-        db.session.commit()
-        if page_id == 1:
-            return redirect("/")
-        else:
-            return redirect("member_page/" + str(page_id))
-        return redirect("/")
+        if check_credentials.check_page_ownership(db, session, page_id):
+            sql = "UPDATE pages SET introduction=:new_introduction WHERE id=:page_id"
+            db.session.execute(sql, {"new_introduction":new_introduction, "page_id":page_id})
+            db.session.commit()
+            if page_id == "1": return redirect("/")
+            else: return redirect("member_page/" + str(page_id))
+        else: return redirect("error.html", error="insufficient credentials")
     elif "new_name" in request.form:
-        new_name = request.form["new_name"]
-        new_introduction = request.form["new_introduction"]
-        sql = "INSERT INTO pages (title,introduction) VALUES (:new_name,:new_introduction)"
-        db.session.execute(sql, {"new_name":new_name,"new_introduction":new_introduction})
-        db.session.commit()
-
-        #TODO: redirect to newly created page instead of root
-        return redirect("/")
+        if check_credentials.is_pi(db, session) or check_credentials.is_member(db, session):
+            #TODO: check that member is not creating a duplicate personal page
+            new_name = request.form["new_name"]
+            new_introduction = request.form["new_introduction"]
+            sql = "INSERT INTO pages (title,introduction) VALUES (:new_name,:new_introduction)"
+            db.session.execute(sql, {"new_name":new_name, "new_introduction":new_introduction})
+            db.session.commit()
+            
+            #after page creation: adding credentials for PI (and whoever just created the page)
+            username = session["username"]
+            result = db.session.execute("SELECT id FROM users WHERE username=:username", {"username":username})
+            new_user_id = result.fetchone()[0]
+            result = db.session.execute("SELECT id FROM pages WHERE title=:new_name", {"new_name":new_name})
+            new_page_id = result.fetchone()[0]
+            sql = "INSERT INTO page_ownership (user_id,page_id) VALUES (:new_user_id,:new_page_id)"
+            db.session.execute(sql, {"new_user_id":new_user_id, "new_page_id":new_page_id})
+            db.session.commit()
+            if new_user_id != 1:
+                db.session.execute(sql, {"new_user_id":"1", "new_page_id":new_page_id})
+                db.session.commit()
+            return redirect("member_page/" + str(new_page_id))
+        else: return redirect("error.html", error="insufficient credentials")
 
 @app.route("/new_page")
 def new_page():
-    #TODO: credentials checking before access
-    #if personal page already exists, redirect there
-    return render_template("new_page.html")
+    if check_credentials.is_member(db, session) and check_credentials.check_page_ownership(db, session, 0):
+        return render_template("error.html", error="already has personal page")
+        #TODO: if personal page already exists, redirect there
+    if check_credentials.is_pi(db, session) or check_credentials.is_member(db, session):
+        return render_template("new_page.html")
+    else: return render_template("error.html", error="insufficient credentials")
 
 @app.route("/member_page/<int:page_id>")
 def member_page(page_id):
@@ -120,10 +125,8 @@ def member_page(page_id):
     result = db.session.execute(sql, {"page_id":page_id})
     introductory_text = result.fetchone()[0]
     
-    #checking credentials: PI can change everything
-    allow_pi = False
-    if check_credentials.is_pi(db, session):
-        allow_pi = True
-
+    #checking credentials: PI can change everything, members only their own page
+    allow_pi = check_credentials.is_pi(db, session)
+    allow_member = check_credentials.check_page_ownership(db, session, page_id)
     return render_template("member_page.html", name=name, introductory_text=introductory_text, \
-                            allow_pi=allow_pi, page_id=page_id)
+                            allow_pi=allow_pi, allow_member=allow_member, page_id=page_id)

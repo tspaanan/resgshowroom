@@ -14,6 +14,7 @@
 {{ name }}
 {% if allow_pi %}
 	<form action="/change_text" method="POST">
+        <input type="hidden" name="page_id" value="1">
 		<input type="submit" name="change_name" value="Change">
 	</form>
 {% endif %}
@@ -21,6 +22,7 @@
 <p>{{ introductory_text }}
 {% if allow_pi %}
 	<form action="/change_text" method="POST">
+        <input type="hidden" name="page_id" value="1">
 		<input type="submit" name="change_introduction" value="Change">
 	</form>
 {% endif %}

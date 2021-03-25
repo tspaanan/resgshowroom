@@ -1,13 +1,35 @@
 def is_pi(db, session):
-    #TODO: write elegantly what's below
-    sql = "SELECT role FROM users WHERE username=:username"
+    result = common_preliminaries(db, session)
+    if result == None: return False
+    return result.fetchone()[0] == "pi"
+
+def is_member(db, session):
+    result = common_preliminaries(db, session)
+    if result == None: return False
+    return result.fetchone()[0] == "member"
+
+def is_student(db, session):
+    result = common_preliminaries(db, session)
+    if result == None: return False
+    return result.fetchone()[0] == "student"
+
+def common_preliminaries(db, session):
     try:
         username = session["username"]
     except:
-        username = "admin_test"
-    print(username)
-    result = db.session.execute(sql, {"username":username})
-    if result.fetchone()[0] == "admin_test":
-        return True
-    else:
+        return None
+    sql = "SELECT role FROM users WHERE username=:username"
+    return db.session.execute(sql, {"username":username})
+
+def check_page_ownership(db, session, page_id):
+    try:
+        username = session["username"]
+    except:
         return False
+    if page_id == 0: #check if username has page ownership of any pages
+        sql = "SELECT 1 FROM users U,page_ownership P WHERE U.username=:username AND U.id=P.user_id"
+        result = db.session.execute(sql, {"username":username})
+    else: #otherwise check if username has page ownership of a particular page
+        sql = "SELECT 1 FROM users U,page_ownership P WHERE U.username=:username AND U.id=P.user_id AND P.page_id=:page_id"
+        result = db.session.execute(sql, {"username":username, "page_id":page_id})
+    return result.fetchone() != None
