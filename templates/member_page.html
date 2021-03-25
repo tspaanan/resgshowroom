@@ -1,0 +1,24 @@
+<title>Research Group Showroom: member page</title>
+{% if session.username %}
+<p>You are logged in. <form action="/logout">
+	<input type="submit" value="Logout">
+</form></p>
+{% endif %}
+<h1>
+{{ name }}
+{% if allow_pi or allow_member %}
+	<form action="/change_text" method="POST">
+        <input type="hidden" name="page_id" value="{{ page_id }}">
+		<input type="submit" name="change_name" value="Change">
+	</form>
+{% endif %}
+</h1>
+<p>{{ introductory_text }}
+{% if allow_pi or allow_member %}
+	<form action="/change_text" method="POST">
+        <input type="hidden" name="page_id" value="{{ page_id }}">
+		<input type="submit" name="change_introduction" value="Change">
+	</form>
+{% endif %}
+<p>Link back to root: <a href="/">Link</a></p>
+Tämän sivun id on: {{ page_id }}

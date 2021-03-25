@@ -24,11 +24,11 @@
 		<input type="submit" name="change_introduction" value="Change">
 	</form>
 {% endif %}
-<p>Linkkejä alisivuille:
+<p>Links to personal pages:
 	<ul>
-		<li>linkki1</li>
-		<li>linkki2</li>
-		<li>linkki3</li>
+		{% for subpage_id in subpages_id %}
+		<li><a href="/member_page/{{ subpage_id[0] }}">Link</a>: page id {{ subpage_id[0] }}</li>
+		{% endfor %}
 	</ul>
 	{% if allow_pi or allow_member %}
 	<form action="/new_page">
