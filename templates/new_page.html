@@ -1,4 +1,4 @@
-<form action="/update" method="POST">
+<form action="/update" method="POST" onsubmit="return validate_page(this)">
     Give your name:
     <input type="text" name="new_name">
     <br>
@@ -7,3 +7,17 @@
     <br>
     <input type="submit" value="Create new personal page">
 </form>
+
+<script>
+    function validate_page(form) {
+        if (form.new_name.value.length > 200) {
+            alert("Name is too long");
+            return false;
+        }
+        if (form.new_introduction.value.length > 10000) {
+            alert("Introduction is too long");
+            return false;
+        }
+        return true;
+    }
+</script>

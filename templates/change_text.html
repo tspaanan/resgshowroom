@@ -1,12 +1,12 @@
 {% if (allow_pi or allow_member) and form == "change_name" %}
-<form action="/update" method="POST">
+<form action="/update" method="POST" onsubmit="return validate_name(this)">
     Give a new name:    
     <input type="text" name="changed_name">
     <input type="hidden" name="page_id" value="{{ page_id }}">
     <input type="submit" value="Change">
 </form>
 {% elif (allow_pi or allow_member) and form == "change_introduction" %}
-<form action="/update" method="POST">
+<form action="/update" method="POST" onsubmit="return validate_introduction(this)">
     Change the introductory text:
     <textarea name="changed_introduction" rows="20" cols="80"></textarea>
     <input type="hidden" name="page_id" value="{{ page_id }}">
@@ -16,3 +16,22 @@
     insufficient credentials
     <p>Link back to root: <a href="/">Link</a></p>
 {% endif %}
+
+<script>
+    function validate_name(form) {
+        if (form.changed_name.value.length > 200) {
+            alert("Name is too long");
+            return false;
+        }
+        return true;
+    }
+</script>
+<script>
+    function validate_introduction(form) {
+        if (form.changed_introduction.value.length > 10000) {
+            alert("Introduction is too long");
+            return false;
+        }
+        return true;
+    }
+</script>
