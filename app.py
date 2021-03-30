@@ -67,6 +67,8 @@ def update():
         new_title = request.form["changed_name"]
         page_id = request.form["page_id"]
         if check_credentials.check_page_ownership(db, session, page_id):
+            if len(new_title) > 200:
+                return render_template("error.html", error="new_title too long")
             sql = "UPDATE pages SET title=:new_title WHERE id=:page_id"
             db.session.execute(sql, {"new_title":new_title, "page_id":page_id})
             db.session.commit()
@@ -77,6 +79,8 @@ def update():
         new_introduction = request.form["changed_introduction"]
         page_id = request.form["page_id"]
         if check_credentials.check_page_ownership(db, session, page_id):
+            if len(new_introduction) > 10000:
+                return render_template("error.html", error="new_introduction too long")
             sql = "UPDATE pages SET introduction=:new_introduction WHERE id=:page_id"
             db.session.execute(sql, {"new_introduction":new_introduction, "page_id":page_id})
             db.session.commit()
@@ -88,6 +92,8 @@ def update():
             #TODO: check that member is not creating a duplicate personal page
             new_name = request.form["new_name"]
             new_introduction = request.form["new_introduction"]
+            if len(new_name) > 200 or len(new_introduction) > 10000:
+                return render_template("error.html", error="new_name or new_introduction too long")
             sql = "INSERT INTO pages (title,introduction) VALUES (:new_name,:new_introduction)"
             db.session.execute(sql, {"new_name":new_name, "new_introduction":new_introduction})
             db.session.commit()
