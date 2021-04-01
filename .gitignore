@@ -7,3 +7,4 @@ python3virtuaalienv/
 staticTest/
 templatesTest/
 test.py
+testData*
