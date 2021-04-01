@@ -27,13 +27,15 @@ def index():
     result = db.session.execute("SELECT id FROM pages WHERE id>2")
     subpages_id = result.fetchall()
     
-    return render_template("index.html", name=name, introductory_text=introductory_text, \
+    return render_template("index.html", name=name, introductory_text=introductory_text,
                             allow_pi=allow_pi, allow_member=allow_member, subpages_id=subpages_id)
 
 @app.route("/login", methods=["POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
+    #TODO: jos tässä asettaa esim. role-kenttään oikean roolin
+    #sitä ei tarvitse hakea erikseen tietokannasta check_credentials-vaiheessa
     sql = "SELECT password FROM users WHERE username=:username"
     result = db.session.execute(sql, {"username":username})
     user_password = result.fetchone()
@@ -60,6 +62,41 @@ def change_text():
         return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="change_name", page_id=page_id)
     elif "change_introduction" in request.form:
         return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="change_introduction", page_id=page_id)
+
+@app.route("/new_message", methods=["POST"])
+def new_message():
+    if "new_feedback" in request.form:
+        content = request.form["new_feedback"]
+        #page_id = request.form["page_id"] #prob. remove this line?
+        if len(content) > 10000:
+            return render_template("error.html", error="content too long")
+        sql = "INSERT INTO messages (message,time,archived,page_id) VALUES" \
+            "(:content,NOW(),FALSE,1)"
+        db.session.execute(sql, {"content":content})
+        db.session.commit()
+    return redirect("/")
+
+@app.route("/view_feedback", methods=["GET", "POST"]) #archive_message uudelleenohjaa tänne GET-metodilla
+def view_feedback():
+    allow_pi = check_credentials.is_pi(db, session)
+    archived = "view_archived_feedback" in request.form
+    if allow_pi:
+        sql = "SELECT id,message,time FROM messages WHERE archived=:archived"
+        result = db.session.execute(sql, {"archived":archived})
+        messages = result.fetchall()
+        return render_template("feedback.html", allow_pi=allow_pi, messages=messages,
+                                archived=archived)
+    else: return render_template("error.html", error="insufficient credentials")
+
+@app.route("/archive_message", methods=["POST"])
+def archive_message():
+    if check_credentials.is_pi(db, session):
+        message_id = request.form["message_id"]
+        sql = "UPDATE messages SET archived=TRUE WHERE id=:message_id"
+        db.session.execute(sql, {"message_id":message_id})
+        db.session.commit()
+        return redirect("/view_feedback")
+    else: return render_template("error", error="insufficient credentials")
 
 @app.route("/update", methods=["POST"])
 def update():

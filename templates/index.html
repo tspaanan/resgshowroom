@@ -38,3 +38,25 @@
 	</form>
 	{% endif %}
 </p>
+<p>Leave a message: 
+	<form action="/new_message" method="POST" onsubmit="return validate_message(this)">
+		<textarea name="new_feedback" rows="20" cols="80"></textarea>
+        <input type="hidden" name="page_id" value="1">
+        <input type="submit" value="Send message">
+	</form>
+	{% if allow_pi %}
+	<form action="/view_feedback" method="POST">
+		<input type="submit" name="view_feedback" value="View Feedback">
+	</form>
+	{% endif %}
+</p>
+<script>
+	function validate_message(form) {
+		if (form.new_feedback.value.length > 10000) {
+  	      alert("Message is too long");
+  	      return false;
+		}	
+		alert("Thank you for your feedback!");
+		return true;
+	}
+</script>

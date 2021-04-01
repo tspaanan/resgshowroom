@@ -18,6 +18,7 @@ def common_preliminaries(db, session):
         username = session["username"]
     except:
         return None
+        #TODO: jos yllä palauttaisi False niin olisi elegantimpaa?
     sql = "SELECT role FROM users WHERE username=:username"
     return db.session.execute(sql, {"username":username})
 
