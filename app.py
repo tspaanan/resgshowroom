@@ -11,37 +11,30 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 import check_credentials
+import sql_quories
 
 @app.route("/")
 def index():
-    result = db.session.execute("SELECT title FROM pages WHERE id=1")
-    name = result.fetchone()[0]
-    result = db.session.execute("SELECT introduction FROM pages WHERE id=1")
-    introductory_text = result.fetchone()[0]
+    name = sql_quories.fetch_title(db, 1)
+    introductory_text = sql_quories.fetch_introduction(db, 1)
     
     #checking credentials: only PI can change everything, members can add their own personal pages
     allow_pi = check_credentials.is_pi(db, session)
     allow_member = check_credentials.is_member(db, session)
 
     #fetching keywords and publications
-    #TODO: separate function for this task, need for member pages as well
-    result = db.session.execute("SELECT keyword FROM keywords KW,page_keywords PK WHERE KW.id=PK.keyword_id "
-                                + "AND PK.page_id=1")
-    keywords = result.fetchall()
-    result = db.session.execute("SELECT title,subtitle,journal,volume,year,issue, "
-                                + "page_no,doi FROM publications P,page_publications PP WHERE "
-                                + "P.id=PP.publication_id AND PP.page_id=1")
-    #publications = result.fetchall()
-    publications_all = result.fetchall()
+    keywords = sql_quories.fetch_keywords(db, 1)
+    publications_all = sql_quories.fetch_publications(db, 1)
+    #removing None-values from publications
     publications = []
     for tuple in publications_all:
         tuple_replacement = []
         for data_field in tuple:
             if data_field: tuple_replacement.append(data_field)
-        publications.append(tuple_replacement) #removed None-values from tuples
-    #fetching links to all the member pages
-    result = db.session.execute("SELECT id FROM pages WHERE id>2")
-    subpages_id = result.fetchall()
+        publications.append(tuple_replacement)
+    
+    #fetching links to all member pages
+    subpages_id = sql_quories.fetch_member_pages(db)
     
     return render_template("index.html", name=name, introductory_text=introductory_text,
                             allow_pi=allow_pi, allow_member=allow_member, keywords=keywords,
@@ -53,9 +46,7 @@ def login():
     password = request.form["password"]
     #TODO: jos tässä asettaa esim. role-kenttään oikean roolin
     #sitä ei tarvitse hakea erikseen tietokannasta check_credentials-vaiheessa
-    sql = "SELECT password FROM users WHERE username=:username"
-    result = db.session.execute(sql, {"username":username})
-    user_password = result.fetchone()
+    user_password = sql_quories.fetch_password(db, username)
     if user_password == None:
         return render_template("error.html", error="no_user")
     else:
@@ -87,10 +78,7 @@ def new_message():
         #page_id = request.form["page_id"] #prob. remove this line?
         if len(content) > 10000:
             return render_template("error.html", error="content too long")
-        sql = "INSERT INTO messages (message,time,archived,page_id) VALUES" \
-            "(:content,NOW(),FALSE,1)"
-        db.session.execute(sql, {"content":content})
-        db.session.commit()
+        sql_quories.insert_message(db, 1, content)
     return redirect("/")
 
 @app.route("/view_feedback", methods=["GET", "POST"]) #archive_message uudelleenohjaa tänne GET-metodilla
@@ -98,9 +86,7 @@ def view_feedback():
     allow_pi = check_credentials.is_pi(db, session)
     archived = "view_archived_feedback" in request.form
     if allow_pi:
-        sql = "SELECT id,message,time FROM messages WHERE archived=:archived"
-        result = db.session.execute(sql, {"archived":archived})
-        messages = result.fetchall()
+        messages = sql_quories.fetch_feedback(db, archived)
         return render_template("feedback.html", allow_pi=allow_pi, messages=messages,
                                 archived=archived)
     else: return render_template("error.html", error="insufficient credentials")
@@ -109,9 +95,7 @@ def view_feedback():
 def archive_message():
     if check_credentials.is_pi(db, session):
         message_id = request.form["message_id"]
-        sql = "UPDATE messages SET archived=TRUE WHERE id=:message_id"
-        db.session.execute(sql, {"message_id":message_id})
-        db.session.commit()
+        sql_quories.archive_message(db, message_id)
         return redirect("/view_feedback")
     else: return render_template("error", error="insufficient credentials")
 
@@ -123,9 +107,7 @@ def update():
         if check_credentials.check_page_ownership(db, session, page_id):
             if len(new_title) > 200:
                 return render_template("error.html", error="new_title too long")
-            sql = "UPDATE pages SET title=:new_title WHERE id=:page_id"
-            db.session.execute(sql, {"new_title":new_title, "page_id":page_id})
-            db.session.commit()
+            sql_quories.update_title(db, new_title, page_id)
             if page_id == "1": return redirect("/")
             else: return redirect("member_page/" + str(page_id))
         else: return render_template("error.html", error="insufficient credentials")
@@ -135,9 +117,7 @@ def update():
         if check_credentials.check_page_ownership(db, session, page_id):
             if len(new_introduction) > 10000:
                 return render_template("error.html", error="new_introduction too long")
-            sql = "UPDATE pages SET introduction=:new_introduction WHERE id=:page_id"
-            db.session.execute(sql, {"new_introduction":new_introduction, "page_id":page_id})
-            db.session.commit()
+            sql_quories.update_introduction(db, new_introduction, page_id)
             if page_id == "1": return redirect("/")
             else: return redirect("member_page/" + str(page_id))
         else: return redirect("error.html", error="insufficient credentials")
@@ -148,22 +128,9 @@ def update():
             new_introduction = request.form["new_introduction"]
             if len(new_name) > 200 or len(new_introduction) > 10000:
                 return render_template("error.html", error="new_name or new_introduction too long")
-            sql = "INSERT INTO pages (title,introduction) VALUES (:new_name,:new_introduction)"
-            db.session.execute(sql, {"new_name":new_name, "new_introduction":new_introduction})
-            db.session.commit()
-            
+            sql_quories.insert_page(db, new_name, new_introduction)
             #after page creation: adding credentials for PI (and whoever just created the page)
-            username = session["username"]
-            result = db.session.execute("SELECT id FROM users WHERE username=:username", {"username":username})
-            new_user_id = result.fetchone()[0]
-            result = db.session.execute("SELECT id FROM pages WHERE title=:new_name", {"new_name":new_name})
-            new_page_id = result.fetchone()[0]
-            sql = "INSERT INTO page_ownership (user_id,page_id) VALUES (:new_user_id,:new_page_id)"
-            db.session.execute(sql, {"new_user_id":new_user_id, "new_page_id":new_page_id})
-            db.session.commit()
-            if new_user_id != 1:
-                db.session.execute(sql, {"new_user_id":"1", "new_page_id":new_page_id})
-                db.session.commit()
+            new_page_id = sql_quories.insert_credentials(db, session, new_name)
             return redirect("member_page/" + str(new_page_id))
         else: return redirect("error.html", error="insufficient credentials")
 
@@ -178,12 +145,8 @@ def new_page():
 
 @app.route("/member_page/<int:page_id>")
 def member_page(page_id):
-    sql = "SELECT title FROM pages WHERE id=:page_id"
-    result = db.session.execute(sql, {"page_id":page_id})
-    name = result.fetchone()[0]
-    sql = "SELECT introduction FROM pages WHERE id=:page_id"
-    result = db.session.execute(sql, {"page_id":page_id})
-    introductory_text = result.fetchone()[0]
+    name = sql_quories.fetch_title(db, page_id)
+    introductory_text = sql_quories.fetch_introduction(db, page_id)
     
     #checking credentials: PI can change everything, members only their own page
     allow_pi = check_credentials.is_pi(db, session)
