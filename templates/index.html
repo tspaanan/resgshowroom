@@ -26,6 +26,21 @@
 		<input type="submit" name="change_introduction" value="Change">
 	</form>
 {% endif %}
+
+<!--TEMPORARY: basic elements for keywords, publications-->
+<p>
+	KEYWORDS FOR THIS PAGE: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
+	{% endfor %}
+</p>
+<p>List of publications:
+	<ul>
+		{% for publication in publications %}
+		<li>{% for data_field in publication %} {{ data_field }}{% if not loop.last %} : {% else %}. {% endif %}
+		{% endfor %}</li>
+		{% endfor %}
+	</ul>
+</p>
+
 <p>Links to personal pages:
 	<ul>
 		{% for subpage_id in subpages_id %}
@@ -50,6 +65,12 @@
 	</form>
 	{% endif %}
 </p>
+
+<!--TEMPORARY: basic element for collaborations-->
+<p> In collaboration with:
+	HERE BE LOGOS
+</p>
+
 <script>
 	function validate_message(form) {
 		if (form.new_feedback.value.length > 10000) {

@@ -23,12 +23,29 @@ def index():
     allow_pi = check_credentials.is_pi(db, session)
     allow_member = check_credentials.is_member(db, session)
 
+    #fetching keywords and publications
+    #TODO: separate function for this task, need for member pages as well
+    result = db.session.execute("SELECT keyword FROM keywords KW,page_keywords PK WHERE KW.id=PK.keyword_id "
+                                + "AND PK.page_id=1")
+    keywords = result.fetchall()
+    result = db.session.execute("SELECT title,subtitle,journal,volume,year,issue, "
+                                + "page_no,doi FROM publications P,page_publications PP WHERE "
+                                + "P.id=PP.publication_id AND PP.page_id=1")
+    #publications = result.fetchall()
+    publications_all = result.fetchall()
+    publications = []
+    for tuple in publications_all:
+        tuple_replacement = []
+        for data_field in tuple:
+            if data_field: tuple_replacement.append(data_field)
+        publications.append(tuple_replacement) #removed None-values from tuples
     #fetching links to all the member pages
     result = db.session.execute("SELECT id FROM pages WHERE id>2")
     subpages_id = result.fetchall()
     
     return render_template("index.html", name=name, introductory_text=introductory_text,
-                            allow_pi=allow_pi, allow_member=allow_member, subpages_id=subpages_id)
+                            allow_pi=allow_pi, allow_member=allow_member, keywords=keywords,
+                            publications=publications, subpages_id=subpages_id)
 
 @app.route("/login", methods=["POST"])
 def login():

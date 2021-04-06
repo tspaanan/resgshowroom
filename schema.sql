@@ -12,10 +12,36 @@ CREATE TABLE pages (
 );
 
 CREATE TABLE page_ownership (
-	id SERIAL PRIMARY KEY,
 	user_id INTEGER REFERENCES users,
 	page_id INTEGER REFERENCES pages
 );
+
+CREATE TABLE keywords (
+	id SERIAL PRIMARY KEY,
+	keyword TEXT
+);
+
+CREATE TABLE page_keywords (
+	page_id INTEGER REFERENCES pages,
+	keyword_id INTEGER REFERENCES keywords
+);
+
+CREATE TABLE publications (
+	id SERIAL PRIMARY KEY,
+	title TEXT,
+	subtitle TEXT,
+	journal TEXT,
+	volume INTEGER,
+	year INTEGER,
+	issue TEXT,
+	page_no TEXT,
+	doi TEXT
+);
+
+CREATE TABLE page_publications (
+	page_id INTEGER REFERENCES pages,
+	publication_id INTEGER REFERENCES publications
+);	
 
 CREATE TABLE messages (
 	id SERIAL PRIMARY KEY,
