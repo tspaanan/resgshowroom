@@ -26,13 +26,7 @@ def index():
     keywords = sql_quories.fetch_keywords(db, 1)
     publications_all = sql_quories.fetch_publications(db, 1)
     #removing None-values from publications
-    publications = []
-    for tuple in publications_all:
-        tuple_replacement = []
-        for data_field in tuple:
-            if data_field: tuple_replacement.append(data_field)
-        publications.append(tuple_replacement)
-    
+    publications = strip_None_values(publications_all)
     #fetching links to all member pages
     subpages_id = sql_quories.fetch_member_pages(db)
     
@@ -147,9 +141,20 @@ def new_page():
 def member_page(page_id):
     name = sql_quories.fetch_title(db, page_id)
     introductory_text = sql_quories.fetch_introduction(db, page_id)
-    
-    #checking credentials: PI can change everything, members only their own page
+    keywords = sql_quories.fetch_keywords(db, page_id)
+    publications_all = sql_quories.fetch_publications(db, page_id)
+    publications = strip_None_values(publications_all)
     allow_pi = check_credentials.is_pi(db, session)
     allow_member = check_credentials.check_page_ownership(db, session, page_id)
     return render_template("member_page.html", name=name, introductory_text=introductory_text, \
-                            allow_pi=allow_pi, allow_member=allow_member, page_id=page_id)
+                            allow_pi=allow_pi, allow_member=allow_member, page_id=page_id, \
+                            keywords=keywords, publications=publications)
+
+def strip_None_values(list_of_tuples):
+    publications = []
+    for tuple in list_of_tuples:
+        tuple_replacement = []
+        for data_field in tuple:
+            if data_field: tuple_replacement.append(data_field)
+        publications.append(tuple_replacement)
+    return publications
