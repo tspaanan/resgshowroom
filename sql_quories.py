@@ -1,6 +1,5 @@
 from flask.helpers import make_response
 
-
 def archive_message(db, message_id):
         sql = "UPDATE messages SET archived=TRUE WHERE id=:message_id"
         db.session.execute(sql, {"message_id":message_id})
@@ -51,6 +50,11 @@ def fetch_title(db, page_id):
     sql = "SELECT title FROM pages WHERE id=:page_id"
     result = db.session.execute(sql, {"page_id":page_id})
     return result.fetchone()[0]
+
+def fetch_topics(db):
+    sql = "SELECT topic,description,responsible_user_id FROM topics WHERE chosen=FALSE"
+    result = db.session.execute(sql)
+    return result.fetchall()
 
 def insert_credentials(db, session, new_name):
     username = session["username"]

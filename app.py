@@ -28,6 +28,7 @@ def index():
     #checking credentials: only PI can change everything, members can add their own personal pages
     allow_pi = check_credentials.is_pi(db, session)
     allow_member = check_credentials.is_member(db, session)
+    allow_student = check_credentials.is_student(db, session)
 
     #fetching keywords and publications
     keywords = sql_quories.fetch_keywords(db, 1)
@@ -40,10 +41,10 @@ def index():
     images = sql_quories.fetch_images(db)
     
     return render_template("index.html", name=name, introductory_text=introductory_text,
-                            allow_pi=allow_pi, allow_member=allow_member, keywords=keywords,
-                            publications=publications, subpages_id=subpages_id, images=images)
+                            allow_pi=allow_pi, allow_member=allow_member, allow_student=allow_student,
+                            keywords=keywords, publications=publications, subpages_id=subpages_id, images=images)
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
@@ -180,6 +181,15 @@ def member_page(page_id):
     return render_template("member_page.html", name=name, introductory_text=introductory_text, \
                             allow_pi=allow_pi, allow_member=allow_member, page_id=page_id, \
                             keywords=keywords, publications=publications)
+
+@app.route("/student_topics")
+def student_topics():
+    allow_pi = check_credentials.is_pi(db, session)
+    allow_member = check_credentials.is_member(db, session)
+    allow_student = check_credentials.is_student(db, session)
+    topics = sql_quories.fetch_topics(db)
+    return render_template("student_topics.html", allow_pi=allow_pi,
+                    allow_member=allow_member, allow_student=allow_student, topics=topics)
 
 def strip_None_values(list_of_tuples):
     publications = []

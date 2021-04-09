@@ -1,0 +1,39 @@
+<title>Research Group Showroom: research topics</title>
+{% if allow_pi or allow_member or allow_student %}
+    <p>    
+    Available topics:
+    <select name="topic" id="tt" onchange="show_description()">
+    {% for topic in topics %}
+        <option value="{{ topic[0] }}">{{ topic[0] }}</option>
+        <!--does jinja have loop.first attribute? for 'selected' to be added for the first item-->
+    {% endfor %}
+    </select>
+    </p>
+    {% for topic in topics %}
+        <p id="{{ topic[0] }}" name="{{ topic[1] }}"></p>
+        <!--Temporary hack: all the relevant fields from list of lists ('topics') extracted into these hidden elements
+        to be fed to javascript-function show_description() below-->
+    {% endfor %}
+    
+    <table border="1">
+        <tr>
+        <th>Topic</th><th>Description</th>
+        </tr>
+        <tr><td><span id="table_topic">default</span></td><td><span id="table_description">default</span></td>
+        </tr>
+    </table>
+<p>Link back to root: <a href="/">Link</a></p>
+
+<script>
+    function show_description() {
+        var tt = document.getElementById("tt");
+        var tbt = document.getElementById("table_topic");
+        var tbd = document.getElementById("table_description");
+        tbt.innerHTML = tt.value;
+        tbd.innerHTML = document.getElementById(tt.value).getAttribute("name");
+    }
+</script>
+{% else %}
+    insufficient credentials
+    <p>Link back to root: <a href="/">Link</a></p>
+{% endif %}

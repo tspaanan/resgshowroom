@@ -41,7 +41,13 @@ CREATE TABLE publications (
 CREATE TABLE page_publications (
 	page_id INTEGER REFERENCES pages,
 	publication_id INTEGER REFERENCES publications
-);	
+);
+
+CREATE TABLE images (
+	id SERIAL PRIMARY KEY,
+	name TEXT,
+	data BYTEA
+);
 
 CREATE TABLE messages (
 	id SERIAL PRIMARY KEY,
@@ -50,4 +56,13 @@ CREATE TABLE messages (
 	archived BOOLEAN,
 	user_id INTEGER REFERENCES users,
 	page_id INTEGER REFERENCES pages
+);
+
+CREATE TABLE topics (
+	id SERIAL PRIMARY KEY,
+	topic TEXT,
+	description TEXT,
+	responsible_user_id INTEGER REFERENCES users,
+	chosen BOOLEAN,
+	student_id INTEGER REFERENCES users
 );

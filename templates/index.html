@@ -4,12 +4,15 @@
 	<input type="submit" value="Logout">
 </form></p>
 {% else %}
-<form action="/login" method="POST"></form>
+<form action="/login" method="POST">
 	<p>Username: <input type="text" name="username"></p>
 	<p>Password: <input type="password" name="password"></p>
 	<p><input type="submit" value="Login"></p>
 </form>
 <p>Are you a student? <a href="/register">Register here.</a></p>
+{% endif %}
+{% if allow_pi or allow_member or allow_student %}
+	<p><b>Student:</b> check out some potential research topics <a href="/student_topics">here.</a></p>
 {% endif %}
 <h1>
 {{ name }}
