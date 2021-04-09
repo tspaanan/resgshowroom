@@ -12,16 +12,15 @@ db = SQLAlchemy(app)
 
 import check_credentials
 import sql_quories
-import insertImagePostgreSQL
+#import insertImagePostgreSQL
 
-@app.route("/img_test")
-def img_test():
-    return sql_quories.fetch_images(db)
+#@app.route("/img_test")
+#def img_test():
+    #return sql_quories.fetch_images(db)
 #toimii, mutta miten tämän saa sivun osaksi?
 
 @app.route("/")
 def index():
-    #insertImagePostgreSQL.tempInsert(db)
     name = sql_quories.fetch_title(db, 1)
     introductory_text = sql_quories.fetch_introduction(db, 1)
     
@@ -101,7 +100,6 @@ def change_text():
 def new_message():
     if "new_feedback" in request.form:
         content = request.form["new_feedback"]
-        #page_id = request.form["page_id"] #prob. remove this line?
         if len(content) > 10000:
             return render_template("error.html", error="content too long")
         sql_quories.insert_message(db, 1, content)

@@ -2,7 +2,9 @@
 {% if session.username %}
 <p>You are logged in. <form action="/logout">
 	<input type="submit" value="Logout">
-</form></p>
+</form>
+Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
+{% endif %}</p>
 {% else %}
 <form action="/login" method="POST">
 	<p>Username: <input type="text" name="username"></p>
@@ -14,6 +16,7 @@
 {% if allow_pi or allow_member or allow_student %}
 	<p><b>Student:</b> check out some potential research topics <a href="/student_topics">here.</a></p>
 {% endif %}
+
 <h1>
 {{ name }}
 {% if allow_pi %}
@@ -30,12 +33,15 @@
 		<input type="submit" name="change_introduction" value="Change">
 	</form>
 {% endif %}
+</p>
 
+<br>
 <!--TEMPORARY: basic elements for keywords, publications-->
 <p>
 	KEYWORDS FOR THIS PAGE: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
 	{% endfor %}
 </p>
+<br>
 <p>List of publications:
 	<ul>
 		{% for publication in publications %}
@@ -44,11 +50,11 @@
 		{% endfor %}
 	</ul>
 </p>
-
-<p>Links to personal pages:
+<br>
+<p>Links to personal pages of members:
 	<ul>
 		{% for subpage_id in subpages_id %}
-		<li><a href="/member_page/{{ subpage_id[0] }}">Link</a>: page id {{ subpage_id[0] }}</li>
+		<li><a href="/member_page/{{ subpage_id[0] }}">Link</a>: page_id {{ subpage_id[0] }}</li>
 		{% endfor %}
 	</ul>
 	{% if allow_pi or allow_member %}
@@ -57,6 +63,7 @@
 	</form>
 	{% endif %}
 </p>
+<br>
 <p>Leave a message: 
 	<form action="/new_message" method="POST" onsubmit="return validate_message(this)">
 		<textarea name="new_feedback" rows="20" cols="80"></textarea>
@@ -71,9 +78,9 @@
 </p>
 
 <!--TEMPORARY: basic element for collaborations-->
-<p> In collaboration with:
+<p> In collaboration with:<br>
 	HERE BE LOGOS
-	<img {{ images }}>
+	<!--<img {{ images }}>-->
 </p>
 
 <script>
