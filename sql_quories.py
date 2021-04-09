@@ -1,3 +1,6 @@
+from flask.helpers import make_response
+
+
 def archive_message(db, message_id):
         sql = "UPDATE messages SET archived=TRUE WHERE id=:message_id"
         db.session.execute(sql, {"message_id":message_id})
@@ -7,6 +10,14 @@ def fetch_feedback(db, archived):
         sql = "SELECT id,message,time FROM messages WHERE archived=:archived"
         result = db.session.execute(sql, {"archived":archived})
         return result.fetchall()
+
+def fetch_images(db):
+    sql = "SELECT data FROM images"
+    result = db.session.execute(sql)
+    image_data = result.fetchone()[0]
+    response = make_response(bytes(image_data))
+    response.headers.set("Content-Type","image/jpeg")
+    return response
 
 def fetch_introduction(db, page_id):
     sql = "SELECT introduction FROM pages WHERE id=:page_id"
@@ -64,6 +75,11 @@ def insert_message(db, page_id, content):
 def insert_page(db, title, introduction):
     sql = "INSERT INTO pages (title,introduction) VALUES (:new_name,:new_introduction)"
     db.session.execute(sql, {"new_name":title, "new_introduction":introduction})
+    db.session.commit()
+
+def insert_user(db, username, password, role):
+    sql = "INSERT INTO users (username,password,role) VALUES (:username, :password, :role)"
+    db.session.execute(sql, {"username":username, "password":password, "role":role})
     db.session.commit()
 
 def update_introduction(db, introduction, page_id):

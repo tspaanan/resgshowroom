@@ -34,3 +34,8 @@ def check_page_ownership(db, session, page_id):
         sql = "SELECT 1 FROM users U,page_ownership P WHERE U.username=:username AND U.id=P.user_id AND P.page_id=:page_id"
         result = db.session.execute(sql, {"username":username, "page_id":page_id})
     return result.fetchone() != None
+
+def check_username(db, username):
+    sql = "SELECT 1 FROM users WHERE username=:username"
+    result = db.session.execute(sql, {"username":username})
+    return result.fetchone() != None

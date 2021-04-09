@@ -1,0 +1,24 @@
+<title>Research Group Showroom: register</title>
+{% if session.username %}
+<p>You are already logged in. <form action="/logout">
+	<input type="submit" value="Logout">
+</form></p>
+<p>Link back to root: <a href="/">Link</a></p>
+{% else %}
+<form action="/register" method="POST" onsubmit="return validate_repeat(this)">
+	<p>Create a new username: <input type="text" name="new_username"></p>
+	<p>Create a new password: <input type="password" name="new_password"></p>
+    <p>Repeat password: <input type="password" name="repeat_password"></p>
+	<p><input type="submit" value="Register"></p>
+</form>
+{% endif %}
+
+<script>
+	function validate_repeat(form) {
+		if (form.new_password.value != form.repeat_password.value) {
+  	      alert("Passwords do not match!");
+  	      return false;
+		}	
+		return true;
+	}
+</script>

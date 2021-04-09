@@ -12,9 +12,16 @@ db = SQLAlchemy(app)
 
 import check_credentials
 import sql_quories
+import insertImagePostgreSQL
+
+@app.route("/img_test")
+def img_test():
+    return sql_quories.fetch_images(db)
+#toimii, mutta miten tämän saa sivun osaksi?
 
 @app.route("/")
 def index():
+    #insertImagePostgreSQL.tempInsert(db)
     name = sql_quories.fetch_title(db, 1)
     introductory_text = sql_quories.fetch_introduction(db, 1)
     
@@ -29,12 +36,14 @@ def index():
     publications = strip_None_values(publications_all)
     #fetching links to all member pages
     subpages_id = sql_quories.fetch_member_pages(db)
+    #fetching images
+    images = sql_quories.fetch_images(db)
     
     return render_template("index.html", name=name, introductory_text=introductory_text,
                             allow_pi=allow_pi, allow_member=allow_member, keywords=keywords,
-                            publications=publications, subpages_id=subpages_id)
+                            publications=publications, subpages_id=subpages_id, images=images)
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
@@ -54,6 +63,28 @@ def login():
 def logout():
     del session["username"]
     return redirect("/")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "GET":
+        return render_template("register.html")
+    else:
+        #TODO: check that only students can register student accounts (extra password just for registering a student account, given by PI?)
+        new_password = request.form["new_password"]
+        repeat_password = request.form["repeat_password"]
+        if new_password != repeat_password:
+            return render_template("error.html", error="repeat_password does not match")
+        if new_password == "":
+            return render_template("error.html", error="no password set")
+        new_username = request.form["new_username"]
+        if new_username == "":
+            return render_template("error.html", error="no username set")
+        if check_credentials.check_username(db, new_username):
+            return render_template("error.html", error="username exists already")
+        hashed_password = generate_password_hash(new_password)
+        sql_quories.insert_user(db, new_username, hashed_password, "student")
+        session["username"] = new_username
+        return redirect("/")
 
 @app.route("/change_text", methods=["POST"])
 def change_text():
