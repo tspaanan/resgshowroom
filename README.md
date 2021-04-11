@@ -17,11 +17,13 @@ Sovelluksella on neljä eri käyttäjäryhmää:
 3. Tutkimusryhmän jäsen: voit kirjautua sisään tutkimusryhmän jäsenenä seuraavilla tunnuksilla:
 * käyttäjäni: member + lukuarvo väliltä 3 ja 6
 * salasana: pass + sama lukuarvo väliltä 3 ja 6
+
 Tutkimusryhmän jäsenenä voit luoda oman henkilökohtaisen alasivun kaikkien alasivujen listauksen alapuolelta ("Add new personal page").
 
 4. Tutkimusryhmän johtaja (PI eli primary investigator): voit kirjautua sisään tutkimusryhmän johtajana seuraavalla tunnuksella:
 * käyttäjänimi: pi
 * salasana: sama kuin tutkimusryhmän jäsenillä yllä, mutta ilman lukuarvoa
+
 Tutkimusryhmän johtajana voi muokata etusivulla tutkimusryhmän nimeä ja kuvausta sekä minkä tahansa alasivun nimeä ja kuvausta. Lisäksi voit tarkastella palautelomakkeen kautta lähetettyä palautetta sivun alalaidan 'View Feedback' -napista. Nähdyn palautteen voi arkistoida.
 
 ## Sovelluksen ominaisuudet
