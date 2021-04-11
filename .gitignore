@@ -8,3 +8,4 @@ staticTest/
 templatesTest/
 test.py
 testData*
+clearData*
