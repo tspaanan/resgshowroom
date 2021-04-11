@@ -6,7 +6,7 @@ Sovellus tarjoaa tutkimusryhmien käyttöön työkalut tutkimusryhmän jäsenten
 
 ## Sovelluksen testaaminen
 
-Sovellusta voi testata osoitteessa: [http://resgshowroom.herokuapp.com/](linkki)
+Sovellusta voi testata osoitteessa: [linkki](http://resgshowroom.herokuapp.com/)
 
 Sovelluksella on neljä eri käyttäjäryhmää:
 
