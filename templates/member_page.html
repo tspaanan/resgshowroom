@@ -1,43 +1,83 @@
-<title>Research Group Showroom: member page</title>
-{% if session.username %}
-<p>You are logged in. <form action="/logout">
-	<input type="submit" value="Logout">
-</form>
-Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
-{% endif %}</p>
-{% endif %}
+{% extends "layout.html" %}
+    <title>{% block title %}member page{% endblock %}</title>
 
-<h1>
-{{ name }}
-{% if allow_pi or allow_member %}
-	<form action="/change_text" method="POST">
-        <input type="hidden" name="page_id" value="{{ page_id }}">
-		<input type="submit" name="change_name" value="Change">
-	</form>
-{% endif %}
-</h1>
-<p>{{ introductory_text }}
-{% if allow_pi or allow_member %}
-	<form action="/change_text" method="POST">
-        <input type="hidden" name="page_id" value="{{ page_id }}">
-		<input type="submit" name="change_introduction" value="Change">
-	</form>
-{% endif %}
-</p>
-<br>
-<!--TEMPORARY: basic elements for keywords, publications-->
-<p>
-	KEYWORDS FOR THIS PAGE: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
-	{% endfor %}
-</p>
-<br>
-<p>List of publications:
-	<ul>
-		{% for publication in publications %}
-		<li>{% for data_field in publication %} {{ data_field }}{% if not loop.last %} : {% else %}. {% endif %}
-		{% endfor %}</li>
+	{% block sidebar %}
+
+	{% if session.username %}
+		<li class="nav-item"><p>You are logged in.</li>
+		<li class="nav-item"
+			><form action="/logout">
+				<input type="submit" class="btn btn-primary" value="Logout">
+			</form>
+		</li>
+		<p><br>(debug) Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
+	{% endif %}</p>
+	{% else %}
+		<li class="nav-item">
+			<h4>Login:</h4>
+			<form action="/login" method="POST">
+				<div class="form-group">
+					<label for="inputUsername">Username:</label>
+					<input type="text" class="form-control" name="username" required>
+				</div>
+				<div class="form-group">
+					<label for="inputPassword">Password:</label>
+					<input type="text" class="form-control" name="password" required>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary">Login</button>
+				</div>
+			</form>
+		</li>
+		<li class="nav-item"><p>Are you a student? <a href="/register">Register here.</a></p></li>
+	{% endif %}
+	{% if allow_pi or allow_member or allow_student %}
+		<p><b>Student:</b> check out some potential research topics <a href="/student_topics">here.</a></p>
+	{% endif %}
+	
+	{% endblock %}
+
+	{% block content %}
+
+	<div class="jumbotron">
+		<h1 class="display-4">{{ name }}</h1>
+		<hr>
+
+		{% if allow_pi %}
+			<form action="/change_text" method="POST">
+		        <input type="hidden" name="page_id" value="1">
+				<input type="submit" class="btn btn-primary" name="change_name" value="Change">
+			</form>
+		{% endif %}
+	</div>
+
+	<br>
+	<p>{{ introductory_text }}
+	
+	{% if allow_pi %}
+		<form action="/change_text" method="POST">
+ 	       <input type="hidden" name="page_id" value="1">
+			<input type="submit" class="btn btn-primary" name="change_introduction" value="Change">
+		</form>
+	{% endif %}
+	</p>
+	<br>
+
+	<div class="row">
+		<div class="col">
+		<p>List of publications:
+			<ul class="list-group">
+				{% for publication in publications %}
+					<li class="list-group-item">{% for data_field in publication %} {{ data_field }}{% if not loop.last %} : {% else %}. {% endif %}
+					{% endfor %}
+					</li>{% endfor %}
+			</ul>
+		</p>
+		</div>
+	</div>
+	<p>
+		KEYWORDS FOR THIS PAGE: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
 		{% endfor %}
-	</ul>
-</p>
-<br>
-<p>Link back to root: <a href="/">Link</a></p>
+	</p>
+	
+	{% endblock %}

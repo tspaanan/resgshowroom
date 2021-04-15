@@ -163,6 +163,7 @@ def new_page():
     if check_credentials.is_member(db, session) and check_credentials.check_page_ownership(db, session, 0):
         return render_template("error.html", error="already has personal page")
         #TODO: if personal page already exists, redirect there
+        #TODO: once role is save into session, add extra security here against unauthorized /new_page requests
     if check_credentials.is_pi(db, session) or check_credentials.is_member(db, session):
         return render_template("new_page.html")
     else: return render_template("error.html", error="insufficient credentials")

@@ -1,35 +1,42 @@
-<title>Research Group Showroom: view {% if archived %} archived {% endif %} feedback</title>
-{% if allow_pi %}
+{% extends "layout.html" %}
+    <title>{% block title %}view {% if archived %} archived {% endif %} feedback{% endblock %}</title>
+
+    {% block content %}
+    {% if allow_pi %}
     {% if messages %}
-    <table border="1">
-        <tr>
-        <th>Feedback</th><th>Time</th>{% if not archived %} <th>Archive</th> {% endif %}
-        </tr>
-        {% for message in messages %}
-        <tr><td>{{ message[1] }}</td><td>{{ message[2].strftime("%c") }}</td>
-        {% if not archived %}
-        <td><form action="/archive_message" method="POST">
-            <input type="hidden" name="message_id" value="{{ message[0] }}">
-            <input type="submit" name="archive_message" value="Archive Message">
-        </form></td>
-        {% endif %}
-        </tr>
-        {% endfor %}
-    </table>
+        <div class="table_responsive">
+            <table class="table-striped" border="1">
+                <tr>
+                    <th>Feedback</th><th>Time</th>{% if not archived %} <th>Archive</th> {% endif %}
+                </tr>
+                {% for message in messages %}
+                <tr><td>{{ message[1] }}</td><td>{{ message[2].strftime("%c") }}</td>
+                {% if not archived %}
+                <td><form action="/archive_message" method="POST">
+                    <input type="hidden" name="message_id" value="{{ message[0] }}">
+                    <input type="submit" class="btn btn-primary" name="archive_message" value="Archive Message">
+                </form></td>
+                {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
     {% else %}
     no feedback to display
-    <p>Link back to root: <a href="/">Link</a></p>
     {% endif %}
+    
     {% if not archived %}
         <p><form action="/view_feedback" method="POST">
-        <input type="submit" name="view_archived_feedback" value="View Archived Feedback">
+            <input type="submit" class="btn btn-primary" name="view_archived_feedback" value="View Archived Feedback">
         </form></p>
     {% else %}
         <p><form action="view_feedback" method="POST">
-        <input type="submit" value="View Current Feedback">
+            <input type="submit" class="btn btn-primary" value="View Current Feedback">
         </form></p>
     {% endif %}
-{% else %}
+    
+    {% else %}
     insufficient credentials
-    <p>Link back to root: <a href="/">Link</a></p>
-{% endif %}
+    {% endif %}
+    {% endblock %}

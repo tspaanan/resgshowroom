@@ -1,95 +1,139 @@
-<title>Research Group Showroom: test version</title>
-{% if session.username %}
-<p>You are logged in. <form action="/logout">
-	<input type="submit" value="Logout">
-</form>
-Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
-{% endif %}</p>
-{% else %}
-<form action="/login" method="POST">
-	<p>Username: <input type="text" name="username"></p>
-	<p>Password: <input type="password" name="password"></p>
-	<p><input type="submit" value="Login"></p>
-</form>
-<p>Are you a student? <a href="/register">Register here.</a></p>
-{% endif %}
-{% if allow_pi or allow_member or allow_student %}
-	<p><b>Student:</b> check out some potential research topics <a href="/student_topics">here.</a></p>
-{% endif %}
+{% extends "layout.html" %}
+	<title>{% block title %}test version{% endblock %}</title>
 
-<h1>
-{{ name }}
-{% if allow_pi %}
-	<form action="/change_text" method="POST">
-        <input type="hidden" name="page_id" value="1">
-		<input type="submit" name="change_name" value="Change">
-	</form>
-{% endif %}
-</h1>
-<p>{{ introductory_text }}
-{% if allow_pi %}
-	<form action="/change_text" method="POST">
-        <input type="hidden" name="page_id" value="1">
-		<input type="submit" name="change_introduction" value="Change">
-	</form>
-{% endif %}
-</p>
+	{% block sidebar %}
 
-<br>
-<!--TEMPORARY: basic elements for keywords, publications-->
-<p>
-	KEYWORDS FOR THIS PAGE: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
-	{% endfor %}
-</p>
-<br>
-<p>List of publications:
-	<ul>
-		{% for publication in publications %}
-		<li>{% for data_field in publication %} {{ data_field }}{% if not loop.last %} : {% else %}. {% endif %}
-		{% endfor %}</li>
-		{% endfor %}
-	</ul>
-</p>
-<br>
-<p>Links to personal pages of members:
-	<ul>
-		{% for subpage_id in subpages_id %}
-		<li><a href="/member_page/{{ subpage_id[0] }}">Link</a>: page_id {{ subpage_id[0] }}</li>
-		{% endfor %}
-	</ul>
-	{% if allow_pi or allow_member %}
-	<form action="/new_page">
-		<input type="submit" name="add_new_page" value="Add new personal page">
-	</form>
+	{% if session.username %}<!--Can I pass info on session.username to layout.html as well?
+	In case that would be possible, duplicate html-code from member_page.html could be moved to layout.html-->
+		<li class="nav-item"><p>You are logged in.</li>
+		<li class="nav-item"
+			><form action="/logout">
+				<input type="submit" class="btn btn-primary" value="Logout">
+			</form>
+		</li>
+		<p><br>(debug) Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
+	{% endif %}</p>
+	{% else %}
+		<li class="nav-item">
+			<h4>Login:</h4>
+			<form action="/login" method="POST">
+				<div class="form-group">
+					<label for="inputUsername">Username:</label>
+					<input type="text" class="form-control" name="username" required>
+				</div>
+				<div class="form-group">
+					<label for="inputPassword">Password:</label>
+					<input type="text" class="form-control" name="password" required>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary">Login</button>
+				</div>
+			</form>
+		</li>
+		<li class="nav-item"><p>Are you a student? <a href="/register">Register here.</a></p></li>
 	{% endif %}
-</p>
-<br>
-<p>Leave a message: 
-	<form action="/new_message" method="POST" onsubmit="return validate_message(this)">
-		<textarea name="new_feedback" rows="20" cols="80"></textarea>
-        <input type="hidden" name="page_id" value="1">
-        <input type="submit" value="Send message">
-	</form>
+	{% if allow_pi or allow_member or allow_student %}
+		<p><b>Student:</b> check out some potential research topics <a href="/student_topics">here.</a></p>
+	{% endif %}
+	
+	{% endblock %}
+
+	{% block content %}
+
+	<div class="jumbotron">
+		<h1 class="display-4">{{ name }}</h1>
+		<hr>
+
+		{% if allow_pi %}
+			<form action="/change_text" method="POST">
+		        <input type="hidden" name="page_id" value="1">
+				<input type="submit" class="btn btn-primary" name="change_name" value="Change">
+			</form>
+		{% endif %}
+	</div>
+
+	<br>
+	<p>{{ introductory_text }}
+	
 	{% if allow_pi %}
-	<form action="/view_feedback" method="POST">
-		<input type="submit" name="view_feedback" value="View Feedback">
-	</form>
+		<form action="/change_text" method="POST">
+ 	       <input type="hidden" name="page_id" value="1">
+			<input type="submit" class="btn btn-primary" name="change_introduction" value="Change">
+		</form>
 	{% endif %}
-</p>
+	</p>
+	<br>
 
-<!--TEMPORARY: basic element for collaborations-->
-<p> In collaboration with:<br>
-	HERE BE LOGOS
+	<div class="row">
+		<div class="col">
+		<p>List of publications:
+			<ul class="list-group">
+				{% for publication in publications %}
+					<li class="list-group-item">{% for data_field in publication %} {{ data_field }}{% if not loop.last %} : {% else %}. {% endif %}
+					{% endfor %}
+					</li>{% endfor %}
+			</ul>
+		</p>
+		</div>
+
+		<div class="col-5">
+		<p>Links to personal pages of members:
+			<ul class="list-group">
+				{% for subpage_id in subpages_id %}
+					<li class="list-group-item"><a href="/member_page/{{ subpage_id[0] }}">Link</a>: page_id {{ subpage_id[0] }}
+					</li>{% endfor %}
+			</ul>
+		{% if allow_pi or allow_member %}
+			<form action="/new_page">
+				<input type="submit" class="btn btn-primary" name="add_new_page" value="Add new personal page">
+			</form>
+		{% endif %}
+		</p>
+		</div>
+	</div>
+	<br>
+
+	<p>
+		KEYWORDS FOR THIS PAGE: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
+		{% endfor %}
+	</p>
+	<br>
+
+	<p><!--Leave a message:-->
+		<form action="/new_message" method="POST">
+			<div class="form-group">
+				<label for="leaveFeedback">Leave a message:</label>
+				<input type="hidden" name="page_id" value="1">
+				<textarea class="form-control" name="new_feedback" rows="10" required></textarea>
+			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Send message</button>
+			</div>
+		</form>
+	
+		{% if allow_pi %}
+			<form action="/view_feedback" method="POST">
+				<input type="submit" class="btn btn-primary" name="view_feedback" value="View Feedback">
+			</form>
+		{% endif %}
+	</p>
+
+	<!--TEMPORARY: basic element for collaborations-->
+	<p> In collaboration with:<br>
+		HERE BE LOGOS
 	<!--<img {{ images }}>-->
-</p>
+	</p>
 
-<script>
-	function validate_message(form) {
-		if (form.new_feedback.value.length > 10000) {
-  	      alert("Message is too long");
-  	      return false;
-		}	
-		alert("Thank you for your feedback!");
-		return true;
-	}
-</script>
+	{% endblock %}
+
+	<!--<script>
+		function validate_message(form) {
+			if (form.new_feedback.value.length > 10000) {
+	  	      alert("Message is too long");
+	  	      return false;
+			}	
+			alert("Thank you for your feedback!");
+			return true;
+		}
+	</script>
+	TODO: change javascript for EventListener for bootstrap form validation-->

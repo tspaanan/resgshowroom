@@ -1,23 +1,22 @@
-<form action="/update" method="POST" onsubmit="return validate_page(this)">
-    Give your name:
-    <input type="text" name="new_name">
-    <br>
-    Provide introductory text:
-    <textarea name="new_introduction" rows="20" cols="80"></textarea>
-    <br>
-    <input type="submit" value="Create new personal page">
-</form>
+{% extends "layout.html" %}
+    <title>{% block title %}new member page{% endblock %}</title>
 
+{% block content %}
+
+    <form action="/update" method="POST">
+        <div class="form-group">
+            <label for="newName">Give your name:</label>
+            <input type="text" class="form-control" name="new_name" required>
+            <br>
+            <label for="newIntroduction"> Provide introductory text:</label>
+            <textarea class="form-control" name="new_introduction" rows="10" required></textarea>
+            <input type="hidden" name="page_id" value="{{ page_id }}">
+            <input type="submit" class="btn btn-primary" value="Create new personal page">
+        </div>
+    </form>
+
+{% endblock %}
+
+<!--TODO: write validation script with bootstrap-->
 <script>
-    function validate_page(form) {
-        if (form.new_name.value.length > 200) {
-            alert("Name is too long");
-            return false;
-        }
-        if (form.new_introduction.value.length > 10000) {
-            alert("Introduction is too long");
-            return false;
-        }
-        return true;
-    }
 </script>

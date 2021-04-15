@@ -1,37 +1,36 @@
+{% extends "layout.html" %}
+    <title>{% block title %}update text{% endblock %}</title>
+
+{% block content %}
+
 {% if (allow_pi or allow_member) and form == "change_name" %}
-<form action="/update" method="POST" onsubmit="return validate_name(this)">
-    Give a new name:    
-    <input type="text" name="changed_name">
-    <input type="hidden" name="page_id" value="{{ page_id }}">
-    <input type="submit" value="Change">
-</form>
+    <form action="/update" method="POST">
+        <div class="form-group">
+            <label for="updateName">Give a new name:</label>
+            <input type="text" class="form-control" name="changed_name" required>
+            <input type="hidden" name="page_id" value="{{ page_id }}">
+            <input type="submit" class="btn btn-primary" value="Change">
+        </div>
+    </form>
+
 {% elif (allow_pi or allow_member) and form == "change_introduction" %}
-<form action="/update" method="POST" onsubmit="return validate_introduction(this)">
-    Change the introductory text:
-    <textarea name="changed_introduction" rows="20" cols="80"></textarea>
-    <input type="hidden" name="page_id" value="{{ page_id }}">
-    <input type="submit" value="Change">
-</form>
+    <form action="/update" method="POST">
+        <div class="form-group">
+            <label for="updateIntroduction">Change the introductory text:</label>
+			<textarea class="form-control" name="changed_introduction" rows="10" required></textarea>
+            <input type="hidden" name="page_id" value="{{ page_id }}">
+            <input type="submit" class="btn btn-primary" value="Change">
+        </div>
+    </form>
+
 {% else %}
     insufficient credentials
-    <p>Link back to root: <a href="/">Link</a></p>
+
 {% endif %}
 
+{% endblock %}
+
+<!--TODO: write javascript for validation with bootstrap-->
 <script>
-    function validate_name(form) {
-        if (form.changed_name.value.length > 200) {
-            alert("Name is too long");
-            return false;
-        }
-        return true;
-    }
-</script>
-<script>
-    function validate_introduction(form) {
-        if (form.changed_introduction.value.length > 10000) {
-            alert("Introduction is too long");
-            return false;
-        }
-        return true;
-    }
+
 </script>
