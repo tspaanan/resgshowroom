@@ -47,6 +47,7 @@
 		{% if allow_pi %}
 			<form action="/change_text" method="POST">
 		        <input type="hidden" name="page_id" value="1">
+				<input type="hidden" name="old_text" value="{{ name }}">
 				<input type="submit" class="btn btn-primary" name="change_name" value="Change">
 			</form>
 		{% endif %}
@@ -57,7 +58,8 @@
 	
 	{% if allow_pi %}
 		<form action="/change_text" method="POST">
- 	       <input type="hidden" name="page_id" value="1">
+ 	        <input type="hidden" name="page_id" value="1">
+			<input type="hidden" name="old_text" value="{{ introductory_text }}">
 			<input type="submit" class="btn btn-primary" name="change_introduction" value="Change">
 		</form>
 	{% endif %}
@@ -79,8 +81,8 @@
 		<div class="col-5">
 		<p>Links to personal pages of members:
 			<ul class="list-group">
-				{% for subpage_id in subpages_id %}
-					<li class="list-group-item"><a href="/member_page/{{ subpage_id[0] }}">Link</a>: page_id {{ subpage_id[0] }}
+				{% for data_field in member_pages %}
+					<li class="list-group-item"><a href="/member_page/{{ data_field[0] }}">{{ data_field[1] }}</a>
 					</li>{% endfor %}
 			</ul>
 		{% if allow_pi or allow_member %}

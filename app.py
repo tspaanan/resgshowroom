@@ -34,14 +34,14 @@ def index():
     publications_all = sql_quories.fetch_publications(db, 1)
     #removing None-values from publications
     publications = strip_None_values(publications_all)
-    #fetching links to all member pages
-    subpages_id = sql_quories.fetch_member_pages(db)
+    #fetching links to all member pages and member names
+    member_pages = sql_quories.fetch_member_pages(db)
     #fetching images
     images = sql_quories.fetch_images(db)
     
     return render_template("index.html", name=name, introductory_text=introductory_text,
                             allow_pi=allow_pi, allow_member=allow_member, allow_student=allow_student,
-                            keywords=keywords, publications=publications, subpages_id=subpages_id, images=images)
+                            keywords=keywords, publications=publications, member_pages=member_pages, images=images)
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -91,10 +91,11 @@ def change_text():
     allow_pi = check_credentials.is_pi(db, session)
     allow_member = check_credentials.is_member(db, session)
     page_id = request.form["page_id"]
+    old_text = request.form["old_text"]
     if "change_name" in request.form:
-        return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="change_name", page_id=page_id)
+        return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="change_name", page_id=page_id, old_text=old_text)
     elif "change_introduction" in request.form:
-        return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="change_introduction", page_id=page_id)
+        return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="change_introduction", page_id=page_id, old_text=old_text)
 
 @app.route("/new_message", methods=["POST"])
 def new_message():

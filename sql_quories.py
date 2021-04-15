@@ -30,7 +30,7 @@ def fetch_keywords(db, page_id):
     return result.fetchall()
 
 def fetch_member_pages(db):
-    sql = "SELECT id FROM pages WHERE id>1"
+    sql = "SELECT id,title FROM pages WHERE id>1"
     result = db.session.execute(sql)
     return result.fetchall()
 
