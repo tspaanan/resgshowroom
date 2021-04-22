@@ -2,6 +2,8 @@ from app import app
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
+import re
+
 from db import db
 import check_credentials
 import sql_quories
@@ -69,6 +71,13 @@ def register():
         if new_password == "":
             return render_template("error.html", error="no password set")
         new_username = request.form["new_username"]
+        #regular expressions were hard to write into a single expression, so three different checks for password validity
+        if re.search('[0-9]+', new_password) == None:
+            return render_template("error.html", error="password has to contain at least one digit")
+        if re.search('[a-z]+', new_password) == None:
+            return render_template("error.html", error="password has to contain at least one lowercase letter")
+        if re.search('[A-Z]+', new_password) == None:
+            return render_template("error.html", error="password has to contain at least one uppercase letter")
         if new_username == "":
             return render_template("error.html", error="no username set")
         if check_credentials.check_username(new_username):

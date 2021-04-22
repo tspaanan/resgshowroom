@@ -9,10 +9,10 @@
 	</form></p>
 	
 	{% else %}
-	<form action="/register" method="POST">
+	<form class="register-form" novalidate action="/register" method="POST">
 		<div class="form-group">
 			<label for="newUsername">Create a new username:</label>
-			<input type="text" class="form-control" name="new_username" required>
+			<input type="text" class="form-control" name="new_username" id="111" required>
 		</div>
 		<div class="form-group">
 			<label for="newPassword">Create a new password:</label>
@@ -23,13 +23,44 @@
 			<input type="password" class="form-control" name="repeat_password">
 		</div>
 		<div class="form-group">
-			<button type="submit" class="btn btn-primary">Register</button>
+			<button type="submit" class="btn btn-primary" onsubmit="return validate_name()">Register</button>
 		</div>
 	</form>
 	{% endif %}
 	
 	{% endblock %}
+<!--
+	<script>
+		// Example starter JavaScript for disabling form submissions if there are invalid fields
+		// FROM BOOTSTRAP DOCUMENTATION, BUT CAN'T GET IT TO WORK
+		(function() {
+		  'use strict';
+		  window.addEventListener('load', function() {
+			// Fetch all the forms we want to apply custom Bootstrap validation styles to
+			var forms = document.getElementsByClassName('register-form');
+			// Loop over them and prevent submission
+			var validation = Array.prototype.filter.call(forms, function(form) {
+			  form.addEventListener('submit', function(event) {
+				if (form.validate_name() === false) {
+				  event.preventDefault();
+				  event.stopPropagation();
+				}
+				form.classList.add('was-validated');
+			  }, false);
+			});
+		  }, false);
+		})();
+		</script>
 
+	<script>
+		function validate_name() {
+				if (document.getElementById('111').length == 0) {
+					alert("Alert message");
+					return false;
+				}
+				return true;
+		}
+	</script>-->
 <!-- rewrite to function with bootstrap form validation
 <script>
 	function validate_repeat(form) {
