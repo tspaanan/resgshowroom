@@ -1,19 +1,22 @@
-def is_pi(db, session):
-    result = common_preliminaries(db, session)
+from db import db
+from flask import session
+
+def is_pi():
+    result = common_preliminaries()
     if result == None: return False
     return result.fetchone()[0] == "pi"
 
-def is_member(db, session):
-    result = common_preliminaries(db, session)
+def is_member():
+    result = common_preliminaries()
     if result == None: return False
     return result.fetchone()[0] == "member"
 
-def is_student(db, session):
-    result = common_preliminaries(db, session)
+def is_student():
+    result = common_preliminaries()
     if result == None: return False
     return result.fetchone()[0] == "student"
 
-def common_preliminaries(db, session):
+def common_preliminaries():
     try:
         username = session["username"]
     except:
@@ -22,7 +25,7 @@ def common_preliminaries(db, session):
     sql = "SELECT role FROM users WHERE username=:username"
     return db.session.execute(sql, {"username":username})
 
-def check_page_ownership(db, session, page_id):
+def check_page_ownership(page_id):
     try:
         username = session["username"]
     except:
@@ -35,7 +38,7 @@ def check_page_ownership(db, session, page_id):
         result = db.session.execute(sql, {"username":username, "page_id":page_id})
     return result.fetchone() != None
 
-def check_username(db, username):
+def check_username(username):
     sql = "SELECT 1 FROM users WHERE username=:username"
     result = db.session.execute(sql, {"username":username})
     return result.fetchone() != None
