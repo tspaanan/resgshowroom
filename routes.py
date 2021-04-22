@@ -1,15 +1,11 @@
 from app import app
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
+
+from db import db
 import check_credentials
 import sql_quories
-#!from flask_sqlalchemy import SQLAlchemy
-#import insertImagePostgreSQL
-from db import db
-#!from os import getenv
-#!app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
-#!app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-#!db = SQLAlchemy(app)
+
 #@app.route("/img_test")
 #def img_test():
     #return sql_quories.fetch_images(db)
