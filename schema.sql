@@ -8,7 +8,8 @@ CREATE TABLE users (
 CREATE TABLE pages (
 	id SERIAL PRIMARY KEY,
 	title TEXT,
-	introduction TEXT
+	introduction TEXT,
+	visible BOOLEAN NOT NULL
 );
 
 CREATE TABLE page_ownership (
@@ -18,7 +19,8 @@ CREATE TABLE page_ownership (
 
 CREATE TABLE keywords (
 	id SERIAL PRIMARY KEY,
-	keyword TEXT
+	keyword TEXT,
+	visible BOOLEAN NOT NULL
 );
 
 CREATE TABLE page_keywords (
@@ -35,7 +37,8 @@ CREATE TABLE publications (
 	year INTEGER,
 	issue TEXT,
 	page_no TEXT,
-	doi TEXT
+	doi TEXT,
+	visible BOOLEAN NOT NULL
 );
 
 CREATE TABLE page_publications (
@@ -46,7 +49,8 @@ CREATE TABLE page_publications (
 CREATE TABLE images (
 	id SERIAL PRIMARY KEY,
 	name TEXT,
-	data BYTEA
+	data BYTEA,
+	visible BOOLEAN NOT NULL
 );
 
 CREATE TABLE messages (
@@ -55,7 +59,8 @@ CREATE TABLE messages (
 	time TIMESTAMP,
 	archived BOOLEAN,
 	user_id INTEGER REFERENCES users,
-	page_id INTEGER REFERENCES pages
+	page_id INTEGER REFERENCES pages,
+	visible BOOLEAN NOT NULL
 );
 
 CREATE TABLE topics (
@@ -64,5 +69,6 @@ CREATE TABLE topics (
 	description TEXT,
 	responsible_user_id INTEGER REFERENCES users,
 	chosen BOOLEAN,
-	student_id INTEGER REFERENCES users
+	student_id INTEGER REFERENCES users,
+	visible BOOLEAN NOT NULL
 );

@@ -113,8 +113,9 @@ def new_message():
 
 @app.route("/view_feedback", methods=["GET", "POST"]) #archive_message uudelleenohjaa tänne GET-metodilla
 def view_feedback():
-    if not check_credentials.csrf_check(request.form["csrf_token"]):
-        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
+    #TODO: fix this for redirection with GET-method
+    #if not check_credentials.csrf_check(request.form["csrf_token"]):
+        #return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
     allow_pi = check_credentials.is_pi()
     archived = "view_archived_feedback" in request.form
     if allow_pi:
