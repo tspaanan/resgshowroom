@@ -12,10 +12,14 @@
             <div class="row">
                 <div class="col-3">
                     <ul class="nav flex-column">
-                        <h3>SIDEBAR OPTIONS:</h3>
+                        <div class="media">
+                            <img src="/static/Sidebar banner.jpg" class="img-fluid" alt="sidebanner picture">
+                        </div>
+                        <br>
                         <li class="nav-item">
-                            <a class="nav-link" href="/">Front Page</a>
+                            <a class="btn btn-info" href="/">Front Page</a>
                         </li>
+                        <br>
                         <li class="nav-item">
                             {% block sidebar %}{% endblock %}
                         </li>

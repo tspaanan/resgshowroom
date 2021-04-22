@@ -171,7 +171,7 @@ def update():
             return redirect("member_page/" + str(new_page_id))
         else: return render_template("error.html", error="insufficient credentials")
 
-@app.route("/new_page")
+@app.route("/new_page", methods=["POST"])
 def new_page():
     if not check_credentials.csrf_check(request.form["csrf_token"]):
         return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")

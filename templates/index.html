@@ -88,7 +88,7 @@
 					</li>{% endfor %}
 			</ul>
 		{% if allow_pi or allow_member %}
-			<form action="/new_page">
+			<form action="/new_page" method="POST">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="add_new_page" value="Add new personal page">
 			</form>
@@ -99,7 +99,7 @@
 	<br>
 
 	<p>
-		KEYWORDS FOR THIS PAGE: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
+		Research Topics In Keywords: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
 		{% endfor %}
 	</p>
 	<br>
