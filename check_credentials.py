@@ -42,3 +42,8 @@ def check_username(username):
     sql = "SELECT 1 FROM users WHERE username=:username"
     result = db.session.execute(sql, {"username":username})
     return result.fetchone() != None
+
+def csrf_check(form_csrf_token):
+    print(session["csrf_token"])
+    print(form_csrf_token)
+    return session["csrf_token"] == form_csrf_token

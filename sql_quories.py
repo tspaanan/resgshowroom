@@ -47,6 +47,11 @@ def fetch_publications(page_id):
     result = db.session.execute(sql, {"page_id":page_id})
     return result.fetchall()
 
+def fetch_role(username):
+    sql = "SELECT role FROM users WHERE username=:username"
+    result = db.session.execute(sql, {"username":username})
+    return result.fetchone()
+
 def fetch_title(page_id):
     sql = "SELECT title FROM pages WHERE id=:page_id"
     result = db.session.execute(sql, {"page_id":page_id})

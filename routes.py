@@ -2,6 +2,7 @@ from app import app
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
+import os
 import re
 
 from db import db
@@ -41,14 +42,15 @@ def index():
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    #TODO: jos tässä asettaa esim. role-kenttään oikean roolin
-    #sitä ei tarvitse hakea erikseen tietokannasta check_credentials-vaiheessa
     user_password = sql_quories.fetch_password(username)
+    user_role = sql_quories.fetch_role(username)[0] #TODO: actually use this value stored in session below
     if user_password == None:
         return render_template("error.html", error="no_user")
     else:
         if check_password_hash(user_password[0],password):
             session["username"] = username
+            session["role"] = user_role
+            session["csrf_token"] = os.urandom(16).hex()
             return redirect("/")
         else:
             return render_template("error.html", error="wrong_password")
@@ -89,6 +91,8 @@ def register():
 
 @app.route("/change_text", methods=["POST"])
 def change_text():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
     allow_pi = check_credentials.is_pi()
     allow_member = check_credentials.is_member()
     page_id = request.form["page_id"]
@@ -109,6 +113,8 @@ def new_message():
 
 @app.route("/view_feedback", methods=["GET", "POST"]) #archive_message uudelleenohjaa tänne GET-metodilla
 def view_feedback():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
     allow_pi = check_credentials.is_pi()
     archived = "view_archived_feedback" in request.form
     if allow_pi:
@@ -119,6 +125,8 @@ def view_feedback():
 
 @app.route("/archive_message", methods=["POST"])
 def archive_message():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
     if check_credentials.is_pi():
         message_id = request.form["message_id"]
         sql_quories.archive_message(message_id)
@@ -127,6 +135,8 @@ def archive_message():
 
 @app.route("/update", methods=["POST"])
 def update():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
     if "changed_name" in request.form:
         new_title = request.form["changed_name"]
         page_id = request.form["page_id"]
@@ -162,6 +172,8 @@ def update():
 
 @app.route("/new_page")
 def new_page():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
     if check_credentials.is_member() and check_credentials.check_page_ownership(0):
         return render_template("error.html", error="already has personal page")
         #TODO: if personal page already exists, redirect there

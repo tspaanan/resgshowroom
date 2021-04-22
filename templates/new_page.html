@@ -11,6 +11,7 @@
             <label for="newIntroduction"> Provide introductory text:</label>
             <textarea class="form-control" name="new_introduction" rows="10" required></textarea>
             <input type="hidden" name="page_id" value="{{ page_id }}">
+			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <input type="submit" class="btn btn-primary" value="Create new personal page">
         </div>
     </form>

@@ -47,6 +47,7 @@
 			<form action="/change_text" method="POST">
 		        <input type="hidden" name="page_id" value="{{ page_id }}">
 				<input type="hidden" name="old_text" value="{{ name }}">
+				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="change_name" value="Change">
 			</form>
 		{% endif %}
@@ -59,6 +60,7 @@
 		<form action="/change_text" method="POST">
  	       <input type="hidden" name="page_id" value="{{ page_id }}">
 			<input type="hidden" name="old_text" value="{{ introductory_text }}">
+			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 			<input type="submit" class="btn btn-primary" name="change_introduction" value="Change">
 		</form>
 	{% endif %}

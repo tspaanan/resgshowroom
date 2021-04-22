@@ -9,10 +9,10 @@
 	</form></p>
 	
 	{% else %}
-	<form class="register-form" novalidate action="/register" method="POST">
+	<form class="register-form" action="/register" method="POST">
 		<div class="form-group">
 			<label for="newUsername">Create a new username:</label>
-			<input type="text" class="form-control" name="new_username" id="111" required>
+			<input type="text" class="form-control" name="new_username" required>
 		</div>
 		<div class="form-group">
 			<label for="newPassword">Create a new password:</label>
@@ -23,7 +23,7 @@
 			<input type="password" class="form-control" name="repeat_password">
 		</div>
 		<div class="form-group">
-			<button type="submit" class="btn btn-primary" onsubmit="return validate_name()">Register</button>
+			<button type="submit" class="btn btn-primary">Register</button>
 		</div>
 	</form>
 	{% endif %}

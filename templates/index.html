@@ -48,6 +48,7 @@
 			<form action="/change_text" method="POST">
 		        <input type="hidden" name="page_id" value="1">
 				<input type="hidden" name="old_text" value="{{ name }}">
+				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="change_name" value="Change">
 			</form>
 		{% endif %}
@@ -60,6 +61,7 @@
 		<form action="/change_text" method="POST">
  	        <input type="hidden" name="page_id" value="1">
 			<input type="hidden" name="old_text" value="{{ introductory_text }}">
+			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 			<input type="submit" class="btn btn-primary" name="change_introduction" value="Change">
 		</form>
 	{% endif %}
@@ -87,6 +89,7 @@
 			</ul>
 		{% if allow_pi or allow_member %}
 			<form action="/new_page">
+				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="add_new_page" value="Add new personal page">
 			</form>
 		{% endif %}
@@ -115,6 +118,7 @@
 	
 		{% if allow_pi %}
 			<form action="/view_feedback" method="POST">
+				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="view_feedback" value="View Feedback">
 			</form>
 		{% endif %}
