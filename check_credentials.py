@@ -38,6 +38,17 @@ def check_page_ownership(page_id):
         result = db.session.execute(sql, {"username":username, "page_id":page_id})
     return result.fetchone() != None
 
+def check_topic_ownership(topic_id):
+    if is_student():
+        sql = "SELECT 1 FROM users U,topics T WHERE U.username=:username AND U.id=T.student_id AND T.id=:topic_id"
+        result = db.session.execute(sql, {"username":session["username"], "topic_id":topic_id})
+        return result.fetchone() != None
+    elif is_member() or is_pi():
+        sql = "SELECT 1 FROM users U,topics T WHERE U.username=:username AND U.id=T.responsible_user_id AND T.id=:topic_id"
+        result = db.session.execute(sql, {"username":session["username"], "topic_id":topic_id})
+        return result.fetchone() != None
+    else: return False
+    
 def check_username(username):
     sql = "SELECT 1 FROM users WHERE username=:username"
     result = db.session.execute(sql, {"username":username})

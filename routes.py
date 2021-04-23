@@ -113,9 +113,16 @@ def new_message():
         content = request.form["new_feedback"]
         if len(content) > 10000:
             return render_template("error.html", error="content too long")
-        sql_quories.insert_message(1, content)
-    return redirect("/")
-
+        sql_quories.insert_message(1, content, 0, session)
+        return redirect("/")
+    elif "new_comment" in request.form:
+        content = request.form["new_comment"]
+        topic_id = request.form["topic_id"]
+        if len(content) > 10000:
+            return render_template("error.html", error="content too long")
+        sql_quories.insert_message(0, content, topic_id, session)
+        return redirect("/student_topics/" + str(topic_id))
+        
 @app.route("/view_feedback", methods=["GET", "POST"]) #archive_message uudelleenohjaa tänne GET-metodilla
 def view_feedback():
     #TODO: fix this for redirection with GET-method
@@ -219,18 +226,39 @@ def member_page(page_id):
     publications = strip_None_values(publications_all)
     allow_pi = check_credentials.is_pi()
     allow_member = check_credentials.check_page_ownership(page_id)
+    allow_student = check_credentials.is_student()
     return render_template("member_page.html", name=name, introductory_text=introductory_text, \
-                            allow_pi=allow_pi, allow_member=allow_member, page_id=page_id, \
+                            allow_pi=allow_pi, allow_member=allow_member, allow_student=allow_student, page_id=page_id, \
                             keywords=keywords, publications=publications)
 
-@app.route("/student_topics")
-def student_topics():
+@app.route("/student_topics/<int:page_id>")
+def student_topics(page_id):
+    #TODO: think on how to check for csrf_token when using GET-method
+    #if not check_credentials.csrf_check(request.form["csrf_token"]):
+        #return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
     allow_pi = check_credentials.is_pi()
     allow_member = check_credentials.is_member()
     allow_student = check_credentials.is_student()
-    topics = sql_quories.fetch_topics()
+    topic_ids = sql_quories.fetch_topic_ids()
+    topic_content = ()
+    own_topic = False
+    messages = ()
+    if page_id != 0:
+        topic_content = sql_quories.fetch_topic_content(page_id)
+        if check_credentials.check_topic_ownership(page_id):
+            own_topic = True
+            messages = sql_quories.fetch_messages(page_id)
     return render_template("student_topics.html", allow_pi=allow_pi,
-                    allow_member=allow_member, allow_student=allow_student, topics=topics)
+                    allow_member=allow_member, allow_student=allow_student, topic_ids=topic_ids, page_id=page_id, topic_content=topic_content, own_topic=own_topic, messages=messages)
+
+@app.route("/reserve_topic", methods=["POST"])
+def reserve_topic():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
+    if check_credentials.is_student():
+        sql_quories.reserve_topic(session, request.form["topic_id"])
+        return redirect("/student_topics/0")
+    else: return render_template("error.html", error="insufficient credentials")
 
 def strip_None_values(list_of_tuples):
     publications = []

@@ -53,16 +53,6 @@ CREATE TABLE images (
 	visible BOOLEAN NOT NULL
 );
 
-CREATE TABLE messages (
-	id SERIAL PRIMARY KEY,
-	message TEXT,
-	time TIMESTAMP,
-	archived BOOLEAN,
-	user_id INTEGER REFERENCES users,
-	page_id INTEGER REFERENCES pages,
-	visible BOOLEAN NOT NULL
-);
-
 CREATE TABLE topics (
 	id SERIAL PRIMARY KEY,
 	topic TEXT,
@@ -70,5 +60,16 @@ CREATE TABLE topics (
 	responsible_user_id INTEGER REFERENCES users,
 	chosen BOOLEAN,
 	student_id INTEGER REFERENCES users,
+	visible BOOLEAN NOT NULL
+);
+
+CREATE TABLE messages (
+	id SERIAL PRIMARY KEY,
+	message TEXT,
+	time TIMESTAMP,
+	archived BOOLEAN,
+	user_id INTEGER REFERENCES users,
+	page_id INTEGER REFERENCES pages,
+	topic_id INTEGER REFERENCES topics,
 	visible BOOLEAN NOT NULL
 );

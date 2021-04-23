@@ -1,6 +1,87 @@
-<title>Research Group Showroom: research topics</title>
-{% if allow_pi or allow_member or allow_student %}
-    <p>    
+{% extends "layout.html" %}
+	<title>{% block title %}student topics - {% if page_id == 0 %}main page{% else %}{{ page_id }}{% endif %}{% endblock %}</title>
+
+	{% block sidebar %}
+
+	{% if session.username %}<!--Can I pass info on session.username to layout.html as well?
+	In case that would be possible, duplicate html-code from member_page.html could be moved to layout.html; same for this student_topics.html-->
+		<li class="nav-item"><p>You are logged in.</li>
+		<li class="nav-item"
+			><form action="/logout">
+				<input type="submit" class="btn btn-primary" value="Logout">
+			</form>
+		</li>
+		<p><br>(debug) Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
+	{% endif %}</p>
+    {% endif %}
+    {% endblock %}
+
+{% block content %}
+    {% if allow_pi or allow_member or allow_student %}
+    <div>
+    <h3>Available topics:</h3>
+    <nav aria-label="Student topics">
+        <ul class="pagination pagination-lg justify-content-center">
+            {% for topic_id in topic_ids %}
+                <li class="page-item"><a class="page-link" href="/student_topics/{{ topic_id[0] }}">{{ loop.index }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+    </div>
+        {% if page_id != 0 %}
+            <p>
+                <h2>{{ topic_content[0][0] }}</h2>
+                {% if topic_content[0][3] %}
+                    VARATTU: TÄHÄN BADGE
+                {% endif %}
+            </p>
+            <p>
+                {{ topic_content[0][1] }}
+            </p>
+            {% if allow_student %}
+                <p>
+                    <form action="/reserve_topic" method="POST">
+		                <input type="hidden" name="topic_id" value="{{ page_id }}">
+				        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        <input type="submit" class="btn btn-primary" value="Reserve this topic">
+                    </form>
+                </p>
+            {% endif %}
+            {% if own_topic %}
+                <form action="/new_message" method="POST">
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="leaveComment">Leave a comment:</label>
+				            <input type="hidden" name="topic_id" value="{{ page_id }}">
+				            <textarea class="form-control" name="new_comment" rows="10" required></textarea>
+                        </div>
+                        <div class="col">
+                            <p>UPLOAD PLACEHOLDER</p>
+                        </div>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-primary">Send comment</button>
+                </form>
+                {% if messages %}
+                <div class="table_responsive">
+                    <table class="table-striped" border="1">
+                    <tr>
+                    <th>Message</th><th>Time</th><th>user_id</th>
+                    </tr>
+                    {% for message in messages %}
+                        <tr><td>{{ message[0] }}</td><td>{{ message[1].strftime("%c") }}</td><td>{{ message[2] }}</td>
+                    </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        insufficient credentials
+    {% endif %}
+{% endblock %}
+    <p>
     Available topics:
     <select name="topic" id="tt" onchange="show_description()">
     {% for topic in topics %}
@@ -22,8 +103,6 @@
         <tr><td><span id="table_topic">default</span></td><td><span id="table_description">default</span></td>
         </tr>
     </table>
-<p>Link back to root: <a href="/">Link</a></p>
-
 <script>
     function show_description() {
         var tt = document.getElementById("tt");
@@ -33,7 +112,3 @@
         tbd.innerHTML = document.getElementById(tt.value).getAttribute("name");
     }
 </script>
-{% else %}
-    insufficient credentials
-    <p>Link back to root: <a href="/">Link</a></p>
-{% endif %}

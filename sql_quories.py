@@ -27,7 +27,7 @@ def archive_message(message_id):
     db.session.commit()
 
 def fetch_feedback(archived):
-    sql = "SELECT id,message,time FROM messages WHERE archived=:archived AND visible=TRUE"
+    sql = "SELECT id,message,time FROM messages WHERE archived=:archived AND page_id=1 AND visible=TRUE"
     result = db.session.execute(sql, {"archived":archived})
     return result.fetchall()
 
@@ -55,6 +55,11 @@ def fetch_member_pages():
     result = db.session.execute(sql)
     return result.fetchall()
 
+def fetch_messages(topic_id):
+    sql = "SELECT message,time,user_id FROM messages WHERE topic_id=:topic_id AND visible=TRUE ORDER BY time"
+    result = db.session.execute(sql, {"topic_id":topic_id})
+    return result.fetchall()
+    
 def fetch_password(username):
     sql = "SELECT password FROM users WHERE username=:username"
     result = db.session.execute(sql, {"username":username})
@@ -77,15 +82,29 @@ def fetch_title(page_id):
     result = db.session.execute(sql, {"page_id":page_id})
     return result.fetchone()[0]
 
+def fetch_topic_ids():
+    sql = "SELECT id FROM topics WHERE visible=TRUE"
+    result = db.session.execute(sql)
+    return result.fetchall()
+
+def fetch_topic_content(page_id):
+    sql = "SELECT topic,description,responsible_user_id,chosen FROM topics WHERE id=:page_id AND visible=TRUE"
+    result = db.session.execute(sql, {"page_id":page_id})
+    return result.fetchall()
+
 def fetch_topics():
     sql = "SELECT topic,description,responsible_user_id FROM topics WHERE chosen=FALSE AND visible=TRUE"
     result = db.session.execute(sql)
     return result.fetchall()
 
+def fetch_user_id(username):
+    sql = "SELECT id FROM users WHERE username=:username"
+    result = db.session.execute(sql, {"username":username})
+    return result.fetchone()[0]
+
 def insert_credentials(session, new_name):
     username = session["username"]
-    result = db.session.execute("SELECT id FROM users WHERE username=:username", {"username":username})
-    new_user_id = result.fetchone()[0]
+    new_user_id = fetch_user_id(username)
     result = db.session.execute("SELECT id FROM pages WHERE title=:new_name", {"new_name":new_name})
     new_page_id = result.fetchone()[0]
     sql = "INSERT INTO page_ownership (user_id,page_id) VALUES (:new_user_id,:new_page_id)"
@@ -96,10 +115,16 @@ def insert_credentials(session, new_name):
         db.session.commit()
     return new_page_id
 
-def insert_message(page_id, content):
-    sql = "INSERT INTO messages (message,time,archived,page_id,visible) VALUES" \
-        "(:content,NOW(),FALSE,:page_id,TRUE)"
-    db.session.execute(sql, {"content":content, "page_id":page_id})
+def insert_message(page_id, content, topic_id, session):
+    if page_id != 0:
+        sql = "INSERT INTO messages (message,time,archived,page_id,visible) VALUES" \
+            "(:content,NOW(),FALSE,:page_id,TRUE)"
+        db.session.execute(sql, {"content":content, "page_id":page_id})
+    else:
+        username = session["username"]
+        sql = "INSERT INTO messages (message,time,archived,topic_id,visible,user_id) VALUES" \
+            "(:content,NOW(),FALSE,:topic_id,TRUE,:user_id)"
+        db.session.execute(sql, {"content":content, "topic_id":topic_id, "user_id":fetch_user_id(username)})
     db.session.commit()
 
 def insert_page(title, introduction):
@@ -110,6 +135,13 @@ def insert_page(title, introduction):
 def insert_user(username, password, role):
     sql = "INSERT INTO users (username,password,role) VALUES (:username,:password,:role)"
     db.session.execute(sql, {"username":username, "password":password, "role":role})
+    db.session.commit()
+
+def reserve_topic(session, topic_id):
+    sql = "SELECT id FROM users WHERE username=:username"
+    result = db.session.execute(sql, {"username":session["username"]})
+    sql = "UPDATE topics SET chosen=TRUE,student_id=:username_id WHERE id=:topic_id"
+    db.session.execute(sql, {"username_id":result.fetchone()[0], "topic_id":topic_id})
     db.session.commit()
 
 def update_introduction(introduction, page_id):
