@@ -77,6 +77,13 @@
 					{% endfor %}
 					</li>{% endfor %}
 			</ul>
+		{% if allow_pi %}
+			<form action="/change_text" method="POST">
+				<input type="hidden" name="page_id" value="1">
+				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+				<input type="submit" class="btn btn-primary" name="add_new_publication" value="Add new publication">
+			</form>
+		{% endif %}
 		</p>
 		</div>
 

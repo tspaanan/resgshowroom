@@ -44,6 +44,4 @@ def check_username(username):
     return result.fetchone() != None
 
 def csrf_check(form_csrf_token):
-    print(session["csrf_token"])
-    print(form_csrf_token)
     return session["csrf_token"] == form_csrf_token

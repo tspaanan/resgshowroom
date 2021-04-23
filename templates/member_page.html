@@ -76,6 +76,13 @@
 					{% endfor %}
 					</li>{% endfor %}
 			</ul>
+		{% if allow_pi or allow_member %}
+			<form action="/change_text" method="POST">
+				<input type="hidden" name="page_id" value="{{ page_id }}">
+				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+				<input type="submit" class="btn btn-primary" name="add_new_publication" value="Add new publication">
+			</form>
+		{% endif %}
 		</p>
 		</div>
 	</div>

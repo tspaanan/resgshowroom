@@ -10,15 +10,26 @@ def add_keyword(keyword, page_id):
     db.session.execute(sql, {"page_id":page_id, "keyword_id":result.fetchone()[0]})
     db.session.commit()
 
+def add_publication(data: list, page_id):
+    sql = "INSERT INTO publications (title,subtitle,journal,volume,issue,year,page_no,doi,visible) VALUES \
+            (:title,:subtitle,:journal,:volume,:issue,:year,:page_no,:doi,TRUE)"
+    db.session.execute(sql, {"title":data[0], "subtitle":data[1], "journal":data[2], "volume":int(data[3]) if data[3] != "" else None,
+                         "issue":data[4], "year":int(data[5]) if data[5] != "" else None, "page_no":data[6], "doi":data[7]})
+    #fetching the id for publication just added
+    result = db.session.execute("SELECT id FROM publications LIMIT 1 OFFSET (SELECT COUNT(*) FROM publications)-1")
+    sql = "INSERT INTO page_publications (page_id,publication_id) VALUES (:page_id,:publication_id)"
+    db.session.execute(sql, {"page_id":page_id, "publication_id":result.fetchone()[0]})
+    db.session.commit()
+
 def archive_message(message_id):
-        sql = "UPDATE messages SET archived=TRUE WHERE id=:message_id"
-        db.session.execute(sql, {"message_id":message_id})
-        db.session.commit()
+    sql = "UPDATE messages SET archived=TRUE WHERE id=:message_id"
+    db.session.execute(sql, {"message_id":message_id})
+    db.session.commit()
 
 def fetch_feedback(archived):
-        sql = "SELECT id,message,time FROM messages WHERE archived=:archived AND visible=TRUE"
-        result = db.session.execute(sql, {"archived":archived})
-        return result.fetchall()
+    sql = "SELECT id,message,time FROM messages WHERE archived=:archived AND visible=TRUE"
+    result = db.session.execute(sql, {"archived":archived})
+    return result.fetchall()
 
 def fetch_images():
     sql = "SELECT data FROM images WHERE visible=TRUE"

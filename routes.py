@@ -104,6 +104,8 @@ def change_text():
         return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="change_introduction", page_id=page_id, old_text=old_text)
     elif "add_new_keyword" in request.form:
         return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="add_new_keyword", page_id=page_id)
+    elif "add_new_publication" in request.form:
+        return render_template("change_text.html", allow_pi=allow_pi, allow_member=allow_member, form="add_new_publication", page_id=page_id)
 
 @app.route("/new_message", methods=["POST"])
 def new_message():
@@ -180,6 +182,18 @@ def update():
             if len(new_keyword) > 200:
                 return render_template("error.html", error="new_keyword too long")
             sql_quories.add_keyword(new_keyword, page_id)
+            if page_id == "1": return redirect("/")
+            else: return redirect("member_page/" + str(page_id))
+        else: return render_template("error.html", error="insufficient credentials")
+    elif "publication_title" in request.form:
+        page_id = request.form["page_id"]
+        data_fields = []
+        if check_credentials.check_page_ownership(page_id):
+            for k in request.form.keys():
+                if len(request.form[k]) > 200:
+                    return render_template("error.html", error="maximum field length is 200 characters")
+                data_fields.append(request.form[k])
+            sql_quories.add_publication([data_fields[0]] + data_fields[3:], page_id)
             if page_id == "1": return redirect("/")
             else: return redirect("member_page/" + str(page_id))
         else: return render_template("error.html", error="insufficient credentials")

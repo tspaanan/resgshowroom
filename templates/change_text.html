@@ -36,6 +36,47 @@
         </div>
     </form>
 
+{% elif (allow_pi or allow_member) and form == "add_new_publication" %}
+    <form class="publication-form" action="/update" method="POST">
+        <div class="form-group">
+            <label for="addPublicationTitle">Add publication title:</label>
+			<input type="text" class="form-control" name="publication_title" required>
+            <input type="hidden" name="page_id" value="{{ page_id }}">
+			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </div>
+        <div class="form-group">
+            <label for="addPublicationSubtitle">Add publication subtitle (optional):</label>
+            <input type="text" class="form-control" name="publication_subtitle">
+        </div>
+        <div class="form-group">
+            <label for="addPublicationForum">Add publication forum (e.g., journal name; series title):</label>
+            <input type="text" class="form-control" name="publication_forum">
+        </div>
+        <div class="form-group">
+            <label for="addPublicationVolume">Add journal volume (optional):</label>
+            <input type="text" class="form-control" name="publication_volume">
+        </div>
+        <div class="form-group">
+            <label for="addPublicationIssue">Add journal issue number (optional):</label>
+            <input type="text" class="form-control" name="publication_issue">
+        </div>
+        <div class="form-group">
+            <label for="addPublicationYear">Add publication year:</label>
+            <input type="text" class="form-control" name="publication_year">
+        </div>
+        <div class="form-group">
+            <label for="addPublicationPageNos">Add page numbers (separated by '-'):</label>
+            <input type="text" class="form-control" name="publication_pagenos">
+        </div>
+        <div class="form-group">
+            <label for="addPublicationDOI">Add DOI for publication (optional):</label>
+            <input type="text" class="form-control" name="publication_doi">
+        </div>
+		<div class="form-group">
+			<button type="submit" class="btn btn-primary">Add publication</button>
+		</div>
+    </form>
+
 {% else %}
     insufficient credentials
 
