@@ -101,6 +101,13 @@
 	<p>
 		Research Topics In Keywords: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
 		{% endfor %}
+		{% if allow_pi %}
+			<form action="/change_text" method="POST">
+				<input type="hidden" name="page_id" value="1">
+				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+				<input type="submit" class="btn btn-primary" name="add_new_keyword" value="Add new keyword">
+			</form>
+		{% endif %}
 	</p>
 	<br>
 

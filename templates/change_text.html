@@ -25,6 +25,17 @@
         </div>
     </form>
 
+{% elif (allow_pi or allow_member) and form == "add_new_keyword" %}
+    <form action="/update" method="POST">
+        <div class="form-group">
+            <label for="addNewKeyword">Add new keyword:</label>
+			<input type="text" class="form-control" name="new_keyword" required>
+            <input type="hidden" name="page_id" value="{{ page_id }}">
+			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="submit" class="btn btn-primary" value="Add new keyword">
+        </div>
+    </form>
+
 {% else %}
     insufficient credentials
 

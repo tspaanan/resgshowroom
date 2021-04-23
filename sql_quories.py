@@ -1,6 +1,15 @@
 from flask.helpers import make_response
 from db import db
 
+def add_keyword(keyword, page_id):
+    sql = "INSERT INTO keywords (keyword,visible) VALUES (:keyword,TRUE)"
+    db.session.execute(sql, {"keyword":keyword})
+    #fetching the id for keyword just added
+    result = db.session.execute("SELECT id FROM keywords LIMIT 1 OFFSET (SELECT COUNT(*) FROM keywords)-1")
+    sql = "INSERT INTO page_keywords (page_id,keyword_id) VALUES (:page_id,:keyword_id)"
+    db.session.execute(sql, {"page_id":page_id, "keyword_id":result.fetchone()[0]})
+    db.session.commit()
+
 def archive_message(message_id):
         sql = "UPDATE messages SET archived=TRUE WHERE id=:message_id"
         db.session.execute(sql, {"message_id":message_id})
@@ -26,7 +35,7 @@ def fetch_introduction(page_id):
 
 def fetch_keywords(page_id):
     sql = "SELECT keyword FROM keywords KW,page_keywords PK WHERE KW.id=PK.keyword_id \
-           AND PK.page_id=:page_id AND visible=TRUE"
+           AND PK.page_id=:page_id AND KW.visible=TRUE"
     result = db.session.execute(sql, {"page_id":page_id})
     return result.fetchall()
 
@@ -43,7 +52,7 @@ def fetch_password(username):
 def fetch_publications(page_id):
     sql = "SELECT title,subtitle,journal,volume,year,issue, \
            page_no,doi FROM publications P,page_publications PP WHERE \
-           P.id=PP.publication_id AND PP.page_id=:page_id AND visible=TRUE"
+           P.id=PP.publication_id AND PP.page_id=:page_id AND P.visible=TRUE"
     result = db.session.execute(sql, {"page_id":page_id})
     return result.fetchall()
 
