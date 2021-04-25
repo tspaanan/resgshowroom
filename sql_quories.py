@@ -56,7 +56,7 @@ def fetch_member_pages():
     return result.fetchall()
 
 def fetch_messages(topic_id):
-    sql = "SELECT message,time,user_id FROM messages WHERE topic_id=:topic_id AND visible=TRUE ORDER BY time"
+    sql = "SELECT message,time,user_id FROM messages WHERE topic_id=:topic_id AND visible=TRUE ORDER BY time DESC"
     result = db.session.execute(sql, {"topic_id":topic_id})
     return result.fetchall()
     
@@ -131,6 +131,14 @@ def insert_page(title, introduction):
     sql = "INSERT INTO pages (title,introduction,visible) VALUES (:new_name,:new_introduction,TRUE)"
     db.session.execute(sql, {"new_name":title, "new_introduction":introduction})
     db.session.commit()
+
+def insert_topic(topic, description, username):
+    user_id = fetch_user_id(username)
+    sql = "INSERT INTO topics (topic,description,responsible_user_id,chosen,visible) VALUES (:new_topic,:new_description,:user_id,FALSE,TRUE)"
+    db.session.execute(sql, {"new_topic":topic, "new_description":description, "user_id":user_id})
+    db.session.commit()
+    #return topic_id of newly created topic
+    return db.session.execute("SELECT id FROM publications LIMIT 1 OFFSET (SELECT COUNT(*) FROM publications)-1").fetchone()[0]
 
 def insert_user(username, password, role):
     sql = "INSERT INTO users (username,password,role) VALUES (:username,:password,:role)"

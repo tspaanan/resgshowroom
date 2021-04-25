@@ -19,7 +19,8 @@
 {% block content %}
     {% if allow_pi or allow_member or allow_student %}
     <div>
-    <h3>Available topics:</h3>
+    <h3><a class="btn btn-info" href="/student_topics/0">Topics Home</a>
+    <br>Available topics:</h3>
     <nav aria-label="Student topics">
         <ul class="pagination pagination-lg justify-content-center">
             {% for topic_id in topic_ids %}
@@ -75,6 +76,13 @@
                     </table>
                 </div>
                 {% endif %}
+            {% endif %}
+        {% else %}
+            {% if allow_pi or allow_member %}
+			    <form action="/new_topic" method="POST">
+			    	<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+			    	<input type="submit" class="btn btn-primary" name="add_new_topic" value="Add new topic">
+			    </form>
             {% endif %}
         {% endif %}
     {% else %}

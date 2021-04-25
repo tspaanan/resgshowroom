@@ -182,6 +182,15 @@ def update():
             new_page_id = sql_quories.insert_credentials(session, new_name)
             return redirect("member_page/" + str(new_page_id))
         else: return render_template("error.html", error="insufficient credentials")
+    elif "new_topic" in request.form:
+        if check_credentials.is_pi() or check_credentials.is_member():
+            new_topic = request.form["new_topic"]
+            new_description = request.form["new_description"]
+            if len(new_topic) > 200 or len(new_description) > 10000:
+                return render_template("error.html", error="new_topic or new_description too long")
+            new_topic_id = sql_quories.insert_topic(new_topic, new_description, session["username"])
+            return redirect("student_topics/" + str(new_topic_id))
+        else: return render_template("error.html", error="insufficient credentials")
     elif "new_keyword" in request.form:
         new_keyword = request.form["new_keyword"]
         page_id = request.form["page_id"]
@@ -215,6 +224,14 @@ def new_page():
         #TODO: once role is save into session, add extra security here against unauthorized /new_page requests
     if check_credentials.is_pi() or check_credentials.is_member():
         return render_template("new_page.html")
+    else: return render_template("error.html", error="insufficient credentials")
+
+@app.route("/new_topic", methods=["POST"])
+def new_topic():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
+    if check_credentials.is_pi() or check_credentials.is_member():
+        return render_template("new_topic.html") #maybe put this and /new_page into a single /new_item instead?
     else: return render_template("error.html", error="insufficient credentials")
 
 @app.route("/member_page/<int:page_id>")

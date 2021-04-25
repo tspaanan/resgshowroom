@@ -28,6 +28,11 @@ CREATE TABLE page_keywords (
 	keyword_id INTEGER REFERENCES keywords
 );
 
+CREATE TABLE topic_keywords (
+	topic_id INTEGER REFERENCES topics,
+	keyword_id INTEGER REFERENCES keywords
+);
+
 CREATE TABLE publications (
 	id SERIAL PRIMARY KEY,
 	title TEXT,
@@ -43,6 +48,11 @@ CREATE TABLE publications (
 
 CREATE TABLE page_publications (
 	page_id INTEGER REFERENCES pages,
+	publication_id INTEGER REFERENCES publications
+);
+
+CREATE TABLE topic_publications (
+	topic_id INTEGER REFERENCES topics,
 	publication_id INTEGER REFERENCES publications
 );
 
