@@ -19,12 +19,13 @@
 {% block content %}
     {% if allow_pi or allow_member or allow_student %}
     <div>
-    <h3><a class="btn btn-info" href="/student_topics/0">Topics Home</a>
-    <br>Available topics:</h3>
+    <p><a class="btn btn-info" href="/student_topics/0">Topics Home</a></p>
+    <h3 style="text-align: center;">Available topics:</h3>
     <nav aria-label="Student topics">
         <ul class="pagination pagination-lg justify-content-center">
             {% for topic_id in topic_ids %}
-                <li class="page-item"><a class="page-link" href="/student_topics/{{ topic_id[0] }}">{{ loop.index }}</a></li>
+            <!-- .pagination in css does not override this component, so setting style here-->
+                <li class="page-item"><a style="color: darkcyan; background-color: aliceblue;" class="page-link" href="/student_topics/{{ topic_id[0] }}">{{ loop.index }}</a></li>
             {% endfor %}
         </ul>
     </nav>
@@ -40,7 +41,7 @@
             <p>
                 {{ topic_content[0][1] }}
             </p>
-            {% if allow_student %}
+            {% if allow_student and not topic_content[0][3] %}
                 <p>
                     <form action="/reserve_topic" method="POST">
 		                <input type="hidden" name="topic_id" value="{{ page_id }}">
@@ -104,7 +105,7 @@
             {% endif %}
         {% else %}
             {% if allow_pi or allow_member %}
-			    <form action="/new_topic" method="POST">
+			    <form style="text-align: center;" action="/new_topic" method="POST">
 			    	<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 			    	<input type="submit" class="btn btn-primary" name="add_new_topic" value="Add new topic">
 			    </form>
@@ -114,19 +115,23 @@
         insufficient credentials
     {% endif %}
 {% endblock %}
+    
+<!--obsolete code below:
     <p>
     Available topics:
     <select name="topic" id="tt" onchange="show_description()">
     {% for topic in topics %}
-        <option value="{{ topic[0] }}">{{ topic[0] }}</option>
+        <option value="{{ topic[0] }}">{{ topic[0] }}</option>-->
         <!--does jinja have loop.first attribute? for 'selected' to be added for the first item-->
+<!--
     {% endfor %}
     </select>
     </p>
     {% for topic in topics %}
-        <p id="{{ topic[0] }}" name="{{ topic[1] }}"></p>
+        <p id="{{ topic[0] }}" name="{{ topic[1] }}"></p>-->
         <!--Temporary hack: all the relevant fields from list of lists ('topics') extracted into these hidden elements
         to be fed to javascript-function show_description() below-->
+<!--
     {% endfor %}
     
     <table border="1">
@@ -144,4 +149,4 @@
         tbt.innerHTML = tt.value;
         tbd.innerHTML = document.getElementById(tt.value).getAttribute("name");
     }
-</script>
+</script>-->

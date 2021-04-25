@@ -28,6 +28,16 @@ CREATE TABLE page_keywords (
 	keyword_id INTEGER REFERENCES keywords
 );
 
+CREATE TABLE topics (
+	id SERIAL PRIMARY KEY,
+	topic TEXT,
+	description TEXT,
+	responsible_user_id INTEGER REFERENCES users,
+	chosen BOOLEAN,
+	student_id INTEGER REFERENCES users,
+	visible BOOLEAN NOT NULL
+);
+
 CREATE TABLE topic_keywords (
 	topic_id INTEGER REFERENCES topics,
 	keyword_id INTEGER REFERENCES keywords
@@ -69,16 +79,6 @@ CREATE TABLE documents (
 	topic_id INTEGER REFERENCES topics,
 	uploader_id INTEGER REFERENCES users,
 	data BYTEA,
-	visible BOOLEAN NOT NULL
-);
-
-CREATE TABLE topics (
-	id SERIAL PRIMARY KEY,
-	topic TEXT,
-	description TEXT,
-	responsible_user_id INTEGER REFERENCES users,
-	chosen BOOLEAN,
-	student_id INTEGER REFERENCES users,
 	visible BOOLEAN NOT NULL
 );
 

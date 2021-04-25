@@ -5,14 +5,13 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import os
 import re
 
-from db import db
+from db import db #this import is unnecessary?
 import check_credentials
 import sql_quories
 
 #@app.route("/img_test")
 #def img_test():
     #return sql_quories.fetch_images(db)
-#toimii, mutta miten tämän saa sivun osaksi?
 
 @app.route("/")
 def index():
@@ -178,7 +177,7 @@ def update():
             if len(new_name) > 200 or len(new_introduction) > 10000:
                 return render_template("error.html", error="new_name or new_introduction too long")
             sql_quories.insert_page(new_name, new_introduction)
-            #after page creation: adding credentials for PI (and whoever just created the page)
+            #after page creation: adding credentials for PI (and whomever just created the page)
             new_page_id = sql_quories.insert_credentials(session, new_name)
             return redirect("member_page/" + str(new_page_id))
         else: return render_template("error.html", error="insufficient credentials")
@@ -280,7 +279,7 @@ def reserve_topic():
         return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
     if check_credentials.is_student():
         sql_quories.reserve_topic(session, request.form["topic_id"])
-        return redirect("/student_topics/0")
+        return redirect("/student_topics/" + request.form["topic_id"])
     else: return render_template("error.html", error="insufficient credentials")
 
 @app.route("/upload", methods=["POST"])
