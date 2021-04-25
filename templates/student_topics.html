@@ -31,10 +31,11 @@
     </div>
         {% if page_id != 0 %}
             <p>
-                <h2>{{ topic_content[0][0] }}</h2>
+                <h2>{{ topic_content[0][0] }}
                 {% if topic_content[0][3] %}
-                    VARATTU: TÄHÄN BADGE
+                    <span class="badge badge-secondary">RESERVED TOPIC</span>
                 {% endif %}
+                </h2>
             </p>
             <p>
                 {{ topic_content[0][1] }}
