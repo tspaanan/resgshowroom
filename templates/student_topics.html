@@ -49,21 +49,44 @@
                 </p>
             {% endif %}
             {% if own_topic %}
-                <form action="/new_message" method="POST">
+            <p>
+                <form action="/upload" method="POST" enctype="multipart/form-data">
                     <div class="form-row">
-                        <div class="col">
-                            <label for="leaveComment">Leave a comment:</label>
-				            <input type="hidden" name="topic_id" value="{{ page_id }}">
-				            <textarea class="form-control" name="new_comment" rows="10" required></textarea>
-                        </div>
-                        <div class="col">
-                            <p>UPLOAD PLACEHOLDER</p>
-                        </div>
+                    <div class="col">
+                        Upload file here: <input type="file" name="upload_document">
+                        <input type="hidden" name="topic_id" value="{{ page_id }}">
+			    	    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        <br>
+                        <br>
+                        <input type="submit" class="btn btn-primary" value="Upload">
                     </div>
-                    <br>
-                    <button type="submit" class="btn btn-primary">Send comment</button>
+                    <div class="col">
+                        Latest file uploaded:
+                        <br>
+                        {% if latest_document_id == None %}
+                            no files uploaded
+                        {% else %}
+                            <form action="/download" method="POST">
+                            <input type="hidden" name="document_id" value="{{ latest_document_id }}">    
+                            <input type="hidden" name="topic_id" value="{{ page_id }}">
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                            <input type="submit" class="btn btn-primary" value="Download">
+                            </form>
+                        {% endif %}
+                    </div>
+                    </div>
                 </form>
+            </p>
+            <p>
+                    <form action="/new_message" method="POST">
+                        <label for="leaveComment">Leave a comment:</label>
+                        <input type="hidden" name="topic_id" value="{{ page_id }}">
+                        <textarea class="form-control" name="new_comment" rows="10" required></textarea>
+                        <button type="submit" class="btn btn-primary">Send comment</button>
+                    </form>
+            </p>
                 {% if messages %}
+            <p>
                 <div class="table_responsive">
                     <table class="table-striped" border="1">
                     <tr>
@@ -75,6 +98,7 @@
                     {% endfor %}
                     </table>
                 </div>
+            </p>
                 {% endif %}
             {% endif %}
         {% else %}

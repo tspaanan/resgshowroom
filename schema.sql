@@ -63,6 +63,15 @@ CREATE TABLE images (
 	visible BOOLEAN NOT NULL
 );
 
+CREATE TABLE documents (
+	id SERIAL PRIMARY KEY,
+	name TEXT,
+	topic_id INTEGER REFERENCES topics,
+	uploader_id INTEGER REFERENCES users,
+	data BYTEA,
+	visible BOOLEAN NOT NULL
+);
+
 CREATE TABLE topics (
 	id SERIAL PRIMARY KEY,
 	topic TEXT,

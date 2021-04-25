@@ -221,7 +221,7 @@ def new_page():
     if check_credentials.is_member() and check_credentials.check_page_ownership(0):
         return render_template("error.html", error="already has personal page")
         #TODO: if personal page already exists, redirect there
-        #TODO: once role is save into session, add extra security here against unauthorized /new_page requests
+        #TODO: once role is saved into session, add extra security here against unauthorized /new_page requests
     if check_credentials.is_pi() or check_credentials.is_member():
         return render_template("new_page.html")
     else: return render_template("error.html", error="insufficient credentials")
@@ -231,7 +231,7 @@ def new_topic():
     if not check_credentials.csrf_check(request.form["csrf_token"]):
         return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
     if check_credentials.is_pi() or check_credentials.is_member():
-        return render_template("new_topic.html") #maybe put this and /new_page into a single /new_item instead?
+        return render_template("new_topic.html") #maybe put this and /new_page under a single /new_item route instead?
     else: return render_template("error.html", error="insufficient credentials")
 
 @app.route("/member_page/<int:page_id>")
@@ -260,13 +260,19 @@ def student_topics(page_id):
     topic_content = ()
     own_topic = False
     messages = ()
+    latest_document_id = None
     if page_id != 0:
         topic_content = sql_quories.fetch_topic_content(page_id)
         if check_credentials.check_topic_ownership(page_id):
             own_topic = True
             messages = sql_quories.fetch_messages(page_id)
+            latest_document_id = sql_quories.fetch_latest_document_id(page_id)
+            if latest_document_id != None:
+                latest_document_id = latest_document_id[0]
+            print(latest_document_id)
     return render_template("student_topics.html", allow_pi=allow_pi,
-                    allow_member=allow_member, allow_student=allow_student, topic_ids=topic_ids, page_id=page_id, topic_content=topic_content, own_topic=own_topic, messages=messages)
+                        allow_member=allow_member, allow_student=allow_student, topic_ids=topic_ids, page_id=page_id, \
+                        topic_content=topic_content, own_topic=own_topic, messages=messages, latest_document_id=latest_document_id)
 
 @app.route("/reserve_topic", methods=["POST"])
 def reserve_topic():
@@ -276,6 +282,26 @@ def reserve_topic():
         sql_quories.reserve_topic(session, request.form["topic_id"])
         return redirect("/student_topics/0")
     else: return render_template("error.html", error="insufficient credentials")
+
+@app.route("/upload", methods=["POST"])
+def upload():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
+    if "upload_document" in request.files:
+        topic_id = request.form["topic_id"]
+        if check_credentials.check_topic_ownership(topic_id):
+            document_file = request.files["upload_document"]
+            document_filename = document_file.filename
+            #TODO: document type check
+            #TODO: document size check
+            document_data = document_file.read()
+            sql_quories.insert_file(document_filename, document_data, topic_id, session["username"])
+            return redirect("/student_topics/" + str(topic_id))
+    else: return render_template("error.html", error="insufficient credentials")
+
+@app.route("/download", methods=["POST"])
+def download():
+    pass #TODO: make this work
 
 def strip_None_values(list_of_tuples):
     publications = []

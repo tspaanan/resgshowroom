@@ -50,6 +50,11 @@ def fetch_keywords(page_id):
     result = db.session.execute(sql, {"page_id":page_id})
     return result.fetchall()
 
+def fetch_latest_document_id(topic_id):
+    sql = "SELECT id FROM documents WHERE topic_id=:topic_id ORDER BY id DESC LIMIT 1"
+    result = db.session.execute(sql, {"topic_id":topic_id})
+    return result.fetchone()
+
 def fetch_member_pages():
     sql = "SELECT id,title FROM pages WHERE id>1 AND visible=TRUE"
     result = db.session.execute(sql)
@@ -115,6 +120,12 @@ def insert_credentials(session, new_name):
         db.session.commit()
     return new_page_id
 
+def insert_file(filename, filedata, topic_id, username):
+    sql = "INSERT INTO documents (name,data,topic_id,uploader_id,visible) VALUES (:filename,:filedata,:topic_id,:uploader_id,TRUE)"
+    uploader_id = fetch_user_id(username)
+    db.session.execute(sql, {"filename":filename, "filedata":filedata, "topic_id":topic_id, "uploader_id":uploader_id})
+    db.session.commit()
+
 def insert_message(page_id, content, topic_id, session):
     if page_id != 0:
         sql = "INSERT INTO messages (message,time,archived,page_id,visible) VALUES" \
@@ -138,7 +149,7 @@ def insert_topic(topic, description, username):
     db.session.execute(sql, {"new_topic":topic, "new_description":description, "user_id":user_id})
     db.session.commit()
     #return topic_id of newly created topic
-    return db.session.execute("SELECT id FROM publications LIMIT 1 OFFSET (SELECT COUNT(*) FROM publications)-1").fetchone()[0]
+    return db.session.execute("SELECT id FROM topics LIMIT 1 OFFSET (SELECT COUNT(*) FROM topics)-1").fetchone()[0]
 
 def insert_user(username, password, role):
     sql = "INSERT INTO users (username,password,role) VALUES (:username,:password,:role)"
