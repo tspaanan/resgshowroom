@@ -7,7 +7,7 @@
     <form action="/update" method="POST">
         <div class="form-group">
             <label for="updateName">Give a new name:</label>
-            <input type="text" class="form-control" name="changed_name" placeholder="{{ old_text }}" required>
+            <input type="text" class="form-control" name="changed_name" value="{{ old_text }}" required>
             <input type="hidden" name="page_id" value="{{ page_id }}">
 			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <input type="submit" class="btn btn-primary" value="Change">
@@ -18,7 +18,7 @@
     <form action="/update" method="POST">
         <div class="form-group">
             <label for="updateIntroduction">Change the introductory text:</label>
-			<textarea class="form-control" name="changed_introduction" rows="10" placeholder="{{ old_text }}" required></textarea>
+			<textarea class="form-control" name="changed_introduction" rows="10" required>{{ old_text }}</textarea>
             <input type="hidden" name="page_id" value="{{ page_id }}">
 			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <input type="submit" class="btn btn-primary" value="Change">

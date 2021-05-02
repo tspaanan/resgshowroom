@@ -32,23 +32,29 @@ def index():
     member_pages = sql_quories.fetch_member_pages()
     #fetching images
     images = sql_quories.fetch_images()
+
+    # circumventing the design conflict between redirecting to "/" and wanting to work with Boostrap wo/ Javascript
+    feedback_left = False
+    if "feedback_left" in session:
+        feedback_left = session["feedback_left"]
+        session["feedback_left"] = False
     
     return render_template("index.html", name=name, introductory_text=introductory_text,
                             allow_pi=allow_pi, allow_member=allow_member, allow_student=allow_student,
-                            keywords=keywords, publications=publications, member_pages=member_pages, images=images)
+                            keywords=keywords, publications=publications, member_pages=member_pages, images=images,
+                            feedback_left=feedback_left)
 
 @app.route("/login", methods=["POST"])
 def login():
     username = request.form["username"]
     password = request.form["password"]
     user_password = sql_quories.fetch_password(username)
-    user_role = sql_quories.fetch_role(username)[0] #TODO: actually use this value stored in session below
     if user_password == None:
         return render_template("error.html", error="no_user")
     else:
         if check_password_hash(user_password[0],password):
             session["username"] = username
-            session["role"] = user_role
+            session["role"] = sql_quories.fetch_role(username)[0] #TODO: actually use this value stored in session below
             session["csrf_token"] = os.urandom(16).hex()
             return redirect("/")
         else:
@@ -86,6 +92,8 @@ def register():
         hashed_password = generate_password_hash(new_password)
         sql_quories.insert_user(new_username, hashed_password, "student")
         session["username"] = new_username
+        session["role"] = "student"
+        session["csrf_token"] = os.urandom(16).hex()
         return redirect("/")
 
 @app.route("/change_text", methods=["POST"])
@@ -113,6 +121,7 @@ def new_message():
         if len(content) > 10000:
             return render_template("error.html", error="content too long")
         sql_quories.insert_message(1, content, 0, session)
+        session["feedback_left"] = True
         return redirect("/")
     elif "new_comment" in request.form:
         content = request.form["new_comment"]
@@ -208,6 +217,12 @@ def update():
                 if len(request.form[k]) > 200:
                     return render_template("error.html", error="maximum field length is 200 characters")
                 data_fields.append(request.form[k])
+            if len(request.form["publication_volume"]) != 0:
+                if re.search('^[0-9]+$', request.form["publication_volume"]) == None:
+                    return render_template("error.html", error="publication volume has to be numbers")
+            if len(request.form["publication_year"]) != 0:
+                if re.search('^[0-9]+$', request.form["publication_year"]) == None:
+                    return render_template("error.html", error="publication year has to be numbers")
             sql_quories.add_publication([data_fields[0]] + data_fields[3:], page_id)
             if page_id == "1": return redirect("/")
             else: return redirect("member_page/" + str(page_id))
