@@ -32,12 +32,12 @@ def fetch_feedback(archived):
     return result.fetchall()
 
 def fetch_images():
-    sql = "SELECT data FROM images WHERE visible=TRUE"
+    sql = "SELECT b64data FROM images WHERE visible=TRUE"
     result = db.session.execute(sql)
-    image_data = result.fetchone()[0]
-    response = make_response(bytes(image_data))
-    response.headers.set("Content-Type","image/jpeg")
-    return response
+    images = []
+    for image_data in result.fetchall():
+        images.append(image_data[0])
+    return images
 
 def fetch_introduction(page_id):
     sql = "SELECT introduction FROM pages WHERE id=:page_id"
@@ -124,6 +124,11 @@ def insert_file(filename, filedata, topic_id, username):
     sql = "INSERT INTO documents (name,data,topic_id,uploader_id,visible) VALUES (:filename,:filedata,:topic_id,:uploader_id,TRUE)"
     uploader_id = fetch_user_id(username)
     db.session.execute(sql, {"filename":filename, "filedata":filedata, "topic_id":topic_id, "uploader_id":uploader_id})
+    db.session.commit()
+
+def insert_logo(filename, filedata):
+    sql = "INSERT INTO images2 (name,b64data,visible) VALUES (:filename,:filedata,TRUE)"
+    db.session.execute(sql, {"filename":filename, "filedata":filedata})
     db.session.commit()
 
 def insert_message(page_id, content, topic_id, session):

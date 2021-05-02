@@ -145,10 +145,15 @@
 			</form>
 		{% endif %}
 	</p>
-	<!--TEMPORARY: basic element for collaborations-->
+
 	<p> In collaboration with:<br>
-		HERE BE LOGOS
-	<!--<img {{ images }}>-->
+		<div class="row">	
+			{% for image in images %}
+			<div class="media">
+			<img src="data:image/jpeg;base64, {{ image }}" class="mr-3" alt="logo of a collaborator" width="200" height="auto">
+			</div>
+			{% endfor %}
+		</div>
 	</p>
 
 	{% endblock %}

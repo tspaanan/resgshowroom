@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 import os
 import re
+import base64
 
 from db import db #this import is unnecessary?
 import check_credentials
@@ -32,6 +33,10 @@ def index():
     member_pages = sql_quories.fetch_member_pages()
     #fetching images
     images = sql_quories.fetch_images()
+    #images = []
+    #with open("./static/pexels-ern-361096.jpg", "rb") as image_byte:
+    #    image_b64 = str(base64.b64encode(image_byte.read()))
+    #images.append(image_b64[2:-1])
 
     # circumventing the design conflict between redirecting to "/" and wanting to work with Boostrap wo/ Javascript
     feedback_left = False
@@ -297,6 +302,14 @@ def reserve_topic():
         return redirect("/student_topics/" + request.form["topic_id"])
     else: return render_template("error.html", error="insufficient credentials")
 
+@app.route("/insert_logo")
+def insert_logo():
+    #TODO: credentials etc.
+
+    with open("./static/pexels-ern-361096.jpg", "rb") as image_byte:
+        image_b64 = str(base64.b64encode(image_byte.read()))
+    sql_quories.insert_logo("a-logo", image_b64[2:-1])
+    
 @app.route("/upload", methods=["POST"])
 def upload():
     if not check_credentials.csrf_check(request.form["csrf_token"]):

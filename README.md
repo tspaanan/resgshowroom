@@ -40,3 +40,10 @@ Sovelluksen ominaisuudet ovat seuraavat:
 * Vierailijat voivat katsoa tutkimusryhmän etusivua ja tarkastella tutkimusryhmän jäsenten henkilökohtaisia esittelysivuja. [OK]
 * Vierailijat voivat hakea sovelluksesta asiasanojen perusteella tutkimusryhmän jäseniä, joilla on tietty asiantuntijuus tai menetelmäosaaminen. [ei toteutettu]
 * Vierailijat voivat jättää tutkimusryhmälle palautetta tai yhteydenottopyynnön esimerkiksi haastattelua varten. [perustoteutus OK]
+
+## Lisensseihin liittyviä huomioita
+
+Kaikki käytetyt logot ovat peräisin [Pexels-sivustolta](https://www.pexels.com/), jossa ne on lisensoitu seuraavasti:
+
+* Free to use.
+* No attribution required.

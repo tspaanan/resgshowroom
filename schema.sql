@@ -69,7 +69,7 @@ CREATE TABLE topic_publications (
 CREATE TABLE images (
 	id SERIAL PRIMARY KEY,
 	name TEXT,
-	data BYTEA,
+	b64data TEXT,
 	visible BOOLEAN NOT NULL
 );
 
