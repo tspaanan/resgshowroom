@@ -127,7 +127,7 @@ def insert_file(filename, filedata, topic_id, username):
     db.session.commit()
 
 def insert_logo(filename, filedata):
-    sql = "INSERT INTO images2 (name,b64data,visible) VALUES (:filename,:filedata,TRUE)"
+    sql = "INSERT INTO images (name,b64data,visible) VALUES (:filename,:filedata,TRUE)"
     db.session.execute(sql, {"filename":filename, "filedata":filedata})
     db.session.commit()
 

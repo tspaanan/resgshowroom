@@ -1,3 +1,4 @@
+from io import BufferedReader
 from app import app
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -324,6 +325,14 @@ def upload():
             document_data = document_file.read()
             sql_quories.insert_file(document_filename, document_data, topic_id, session["username"])
             return redirect("/student_topics/" + str(topic_id))
+    elif "upload_logo" in request.files:
+        if check_credentials.is_pi():
+            logo_file = request.files["upload_logo"]
+            logo_filename = logo_file.filename
+            logo_b64 = str(base64.b64encode(logo_file.read()))
+            sql_quories.insert_logo(logo_filename, logo_b64[2:-1]) #logo inserted without b' at the front and ' at the end
+            return redirect("/")
+        else: return render_template("error.html", error="insufficient credentials")
     else: return render_template("error.html", error="insufficient credentials")
 
 @app.route("/download", methods=["POST"])
