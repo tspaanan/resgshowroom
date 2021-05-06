@@ -2,6 +2,7 @@ from io import BufferedReader
 from app import app
 from flask import redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 
 import os
 import re
@@ -10,10 +11,6 @@ import base64
 from db import db #this import is unnecessary?
 import check_credentials
 import sql_quories
-
-#@app.route("/img_test")
-#def img_test():
-    #return sql_quories.fetch_images(db)
 
 @app.route("/")
 def index():
@@ -34,10 +31,6 @@ def index():
     member_pages = sql_quories.fetch_member_pages()
     #fetching images
     images = sql_quories.fetch_images()
-    #images = []
-    #with open("./static/pexels-ern-361096.jpg", "rb") as image_byte:
-    #    image_b64 = str(base64.b64encode(image_byte.read()))
-    #images.append(image_b64[2:-1])
 
     # circumventing the design conflict between redirecting to "/" and wanting to work with Boostrap wo/ Javascript
     feedback_left = False
@@ -303,14 +296,6 @@ def reserve_topic():
         return redirect("/student_topics/" + request.form["topic_id"])
     else: return render_template("error.html", error="insufficient credentials")
 
-@app.route("/insert_logo")
-def insert_logo():
-    #TODO: credentials etc.
-
-    with open("./static/pexels-ern-361096.jpg", "rb") as image_byte:
-        image_b64 = str(base64.b64encode(image_byte.read()))
-    sql_quories.insert_logo("a-logo", image_b64[2:-1])
-    
 @app.route("/upload", methods=["POST"])
 def upload():
     if not check_credentials.csrf_check(request.form["csrf_token"]):
@@ -319,25 +304,31 @@ def upload():
         topic_id = request.form["topic_id"]
         if check_credentials.check_topic_ownership(topic_id):
             document_file = request.files["upload_document"]
-            document_filename = document_file.filename
-            #TODO: document type check
-            #TODO: document size check
-            document_data = document_file.read()
-            sql_quories.insert_file(document_filename, document_data, topic_id, session["username"])
-            return redirect("/student_topics/" + str(topic_id))
+            document_filename = secure_filename(document_file.filename)
+            if len(document_filename) == 0:
+                return render_template("error.html", error="no file to upload")
+            if document_file.mimetype == "application/msword" or document_file.mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                document_data = document_file.read()
+                sql_quories.insert_file(document_filename, document_data, topic_id, session["username"])
+                return redirect("/student_topics/" + str(topic_id))
+            else: return render_template("error.html", error="only doc and docx files are allowed")
     elif "upload_logo" in request.files:
         if check_credentials.is_pi():
             logo_file = request.files["upload_logo"]
-            logo_filename = logo_file.filename
-            logo_b64 = str(base64.b64encode(logo_file.read()))
-            sql_quories.insert_logo(logo_filename, logo_b64[2:-1]) #logo inserted without b' at the front and ' at the end
-            return redirect("/")
+            logo_filename = secure_filename(logo_file.filename)
+            if len(logo_filename) == 0:
+                return render_template("error.html", error="no file to upload")
+            if logo_file.mimetype == "image/jpeg":
+                logo_b64 = str(base64.b64encode(logo_file.read()))
+                sql_quories.insert_logo(logo_filename, logo_b64[2:-1]) #logo inserted without b' at the front and ' at the end
+                return redirect("/")
+            else: return render_template("error.html", error="only jpg and jpeg files are allowed")
         else: return render_template("error.html", error="insufficient credentials")
     else: return render_template("error.html", error="insufficient credentials")
 
 @app.route("/download", methods=["POST"])
 def download():
-    pass #TODO: make this work
+    pass
 
 def strip_None_values(list_of_tuples):
     publications = []
