@@ -232,6 +232,19 @@ def update():
             if publication[0] in request.form:
                 sql_quories.remove_publication(publication[0])
         return redirect("/")
+    elif "delete_keyword" in request.form:
+        page_id = request.form["page_id"]
+        keywords = sql_quories.fetch_keywords(page_id)
+        for keyword in keywords:
+            if keyword[0] in request.form:
+                sql_quories.remove_keyword(keyword[0])
+        return redirect("/")
+    elif "delete_logo" in request.form:
+        logo_ids = sql_quories.fetch_image_ids()
+        for logo_id in logo_ids:
+            if str(logo_id[0]) in request.form:
+                sql_quories.remove_logo(logo_id[0])
+        return redirect("/")
 
 @app.route("/new_page", methods=["POST"])
 def new_page():
@@ -351,16 +364,32 @@ def download():
 def delete_text():
     if not check_credentials.csrf_check(request.form["csrf_token"]):
         return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
+    page_id = request.form["page_id"]
+    if not check_credentials.check_page_ownership(page_id):
+        return render_template("error.html", error="insufficient credentials")
+    allow_pi = check_credentials.is_pi()
+    allow_member = check_credentials.is_member()
     if "delete_publication" in request.form:
-        page_id = request.form["page_id"]
-        if not check_credentials.check_page_ownership(page_id):
-            return render_template("error.html", error="insufficient credentials")
         publications_all = sql_quories.fetch_publications(page_id)
         publications = strip_None_values(publications_all)
-        allow_pi = check_credentials.is_pi()
-        allow_member = check_credentials.is_member()
         return render_template("delete_text.html", publications=publications, allow_pi=allow_pi, allow_member=allow_member,
                                 form="delete_publication", page_id=page_id)
+    elif "delete_keyword" in request.form:
+        keywords = sql_quories.fetch_keywords(page_id)
+        return render_template("delete_text.html", keywords=keywords, allow_pi=allow_pi, allow_member=allow_member,
+                                form="delete_keyword", page_id=page_id)
+
+@app.route("/delete_logo", methods=["POST"])
+def delete_logo():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
+    if not check_credentials.check_page_ownership(1):
+        return render_template("error.html", error="insufficient credentials")
+    allow_pi = check_credentials.is_pi()
+    logo_ids = sql_quories.fetch_image_ids()
+    logos = sql_quories.fetch_images()
+    combined_logo_info = zip(logo_ids, logos)
+    return render_template("delete_text.html", allow_pi=allow_pi, form="delete_logo", combined_logo_info=combined_logo_info)
 
 def strip_None_values(list_of_tuples):
     publications = []

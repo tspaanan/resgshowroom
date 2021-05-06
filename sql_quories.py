@@ -31,6 +31,11 @@ def fetch_feedback(archived):
     result = db.session.execute(sql, {"archived":archived})
     return result.fetchall()
 
+def fetch_image_ids():
+    sql = "SELECT id FROM images WHERE visible=TRUE"
+    result = db.session.execute(sql)
+    return result.fetchall()
+
 def fetch_images():
     sql = "SELECT b64data FROM images WHERE visible=TRUE"
     result = db.session.execute(sql)
@@ -186,4 +191,14 @@ def update_title(title, page_id):
 def remove_publication(title):
     sql = "UPDATE publications SET visible=FALSE WHERE title=:title"
     db.session.execute(sql, {"title":title})
+    db.session.commit()
+
+def remove_keyword(keyword):
+    sql = "UPDATE keywords SET visible=FALSE WHERE keyword=:keyword"
+    db.session.execute(sql, {"keyword":keyword})
+    db.session.commit()
+
+def remove_logo(id):
+    sql = "UPDATE images SET visible=FALSE WHERE id=:id"
+    db.session.execute(sql, {"id":id})
     db.session.commit()
