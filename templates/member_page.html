@@ -97,11 +97,18 @@
 		Research Topics and Other Interests: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
 		{% endfor %}
 		{% if allow_pi or allow_member %}
+		<div class="row">
 			<form action="/change_text" method="POST">
 				<input type="hidden" name="page_id" value="{{ page_id }}">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="add_new_keyword" value="Add new keyword">
 			</form>
+			<form action="/delete_text" method="POST">
+				<input type="hidden" name="page_id" value="{{ page_id }}">
+				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+				<input type="submit" class="btn btn-primary" name="delete_keyword" value="Delete keyword">
+			</form>
+		</div>
 		{% endif %}
 	</p>
 	

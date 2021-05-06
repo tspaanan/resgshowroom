@@ -351,7 +351,8 @@ def upload():
 def download():
     if not check_credentials.csrf_check(request.form["csrf_token"]):
         return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
-    if check_credentials.check_topic_ownership():
+    topic_id = request.form["topic_id"]
+    if check_credentials.check_topic_ownership(topic_id):
         document_id = request.form["document_id"]
         fetched_document = sql_quories.fetch_document(document_id)
         response = make_response(bytes(fetched_document[0][1]))
