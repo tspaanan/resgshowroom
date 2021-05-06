@@ -225,6 +225,13 @@ def update():
             if page_id == "1": return redirect("/")
             else: return redirect("member_page/" + str(page_id))
         else: return render_template("error.html", error="insufficient credentials")
+    elif "delete_publication" in request.form:
+        page_id = request.form["page_id"]
+        publications = sql_quories.fetch_publications(page_id)
+        for publication in publications:
+            if publication[0] in request.form:
+                sql_quories.remove_publication(publication[0])
+        return redirect("/")
 
 @app.route("/new_page", methods=["POST"])
 def new_page():
@@ -306,6 +313,7 @@ def upload():
             document_filename = secure_filename(document_file.filename)
             if len(document_filename) == 0:
                 return render_template("error.html", error="no file to upload")
+            #TODO: document size check?
             if document_file.mimetype == "application/msword":
                 document_data = document_file.read()
                 sql_quories.insert_file(document_filename, document_data, topic_id, session["username"])
@@ -317,6 +325,7 @@ def upload():
             logo_filename = secure_filename(logo_file.filename)
             if len(logo_filename) == 0:
                 return render_template("error.html", error="no file to upload")
+            #TODO: document size check?
             if logo_file.mimetype == "image/jpeg":
                 logo_b64 = str(base64.b64encode(logo_file.read()))
                 sql_quories.insert_logo(logo_filename, logo_b64[2:-1]) #logo inserted without b' at the front and ' at the end
@@ -327,13 +336,31 @@ def upload():
 
 @app.route("/download", methods=["POST"])
 def download():
-    document_id = request.form["document_id"]
-    fetched_document = sql_quories.fetch_document(document_id)
-    print(fetched_document[0][0])
-    response = make_response(bytes(fetched_document[0][1]))
-    response.headers.set("Content-Type","application/msword")
-    response.headers.set("Content-Disposition","attachment; filename=" + fetched_document[0][0])
-    return response
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
+    if check_credentials.check_topic_ownership():
+        document_id = request.form["document_id"]
+        fetched_document = sql_quories.fetch_document(document_id)
+        response = make_response(bytes(fetched_document[0][1]))
+        response.headers.set("Content-Type","application/msword")
+        response.headers.set("Content-Disposition","attachment; filename=" + fetched_document[0][0])
+        return response
+    else: return render_template("error.html", error="insufficient credentials")
+
+@app.route("/delete_text", methods=["POST"])
+def delete_text():
+    if not check_credentials.csrf_check(request.form["csrf_token"]):
+        return render_template("error.html", error="detected csrf_vulnerability exploitation attempt")
+    if "delete_publication" in request.form:
+        page_id = request.form["page_id"]
+        if not check_credentials.check_page_ownership(page_id):
+            return render_template("error.html", error="insufficient credentials")
+        publications_all = sql_quories.fetch_publications(page_id)
+        publications = strip_None_values(publications_all)
+        allow_pi = check_credentials.is_pi()
+        allow_member = check_credentials.is_member()
+        return render_template("delete_text.html", publications=publications, allow_pi=allow_pi, allow_member=allow_member,
+                                form="delete_publication", page_id=page_id)
 
 def strip_None_values(list_of_tuples):
     publications = []

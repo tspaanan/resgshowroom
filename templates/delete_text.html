@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+    <title>{% block title %}delete text{% endblock %}</title>
+
+{% block content %}
+
+{% if (allow_pi or allow_member) and form == "delete_publication" %}
+    <form action="/update" method="POST">
+    <div class="table_responsive">
+        <table class="table-striped" border="1">
+            <tr>
+                <th>Select publications for removal:</th>
+            </tr>
+            {% for publication in publications %}
+                <tr><td> <input type="checkbox" name="{{ publication[0] }}"> {{ publication[0] }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <input type="hidden" name="delete_publication" value="">
+            <input type="hidden" name="page_id" value="{{ page_id }}">
+            <input type="submit" class="btn btn-primary" value="Delete selected publications">
+    </form>
+
+{% else %}
+    insufficient credentials
+
+{% endif %}
+
+{% endblock %}

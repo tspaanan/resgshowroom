@@ -82,6 +82,11 @@
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="add_new_publication" value="Add new publication">
 			</form>
+			<form action="/delete_text" method="POST">
+				<input type="hidden" name="page_id" value="{{ page_id }}">
+				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+				<input type="submit" class="btn btn-primary" name="delete_publication" value="Delete publication">
+			</form>
 		{% endif %}
 		</p>
 		</div>

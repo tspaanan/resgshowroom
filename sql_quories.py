@@ -182,3 +182,8 @@ def update_title(title, page_id):
     sql = "UPDATE pages SET title=:new_title WHERE id=:page_id"
     db.session.execute(sql, {"new_title":title, "page_id":page_id})
     db.session.commit()
+
+def remove_publication(title):
+    sql = "UPDATE publications SET visible=FALSE WHERE title=:title"
+    db.session.execute(sql, {"title":title})
+    db.session.commit()
