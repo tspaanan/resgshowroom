@@ -50,6 +50,11 @@ def fetch_keywords(page_id):
     result = db.session.execute(sql, {"page_id":page_id})
     return result.fetchall()
 
+def fetch_document(document_id):
+    sql = "SELECT name, data FROM documents WHERE id=:document_id"
+    result = db.session.execute(sql, {"document_id":document_id})
+    return result.fetchall()
+
 def fetch_latest_document_id(topic_id):
     sql = "SELECT id FROM documents WHERE topic_id=:topic_id ORDER BY id DESC LIMIT 1"
     result = db.session.execute(sql, {"topic_id":topic_id})

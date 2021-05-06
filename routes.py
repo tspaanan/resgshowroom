@@ -1,6 +1,5 @@
-from io import BufferedReader
 from app import app
-from flask import redirect, render_template, request, session
+from flask import make_response, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
@@ -307,7 +306,7 @@ def upload():
             document_filename = secure_filename(document_file.filename)
             if len(document_filename) == 0:
                 return render_template("error.html", error="no file to upload")
-            if document_file.mimetype == "application/msword" or document_file.mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            if document_file.mimetype == "application/msword":
                 document_data = document_file.read()
                 sql_quories.insert_file(document_filename, document_data, topic_id, session["username"])
                 return redirect("/student_topics/" + str(topic_id))
@@ -328,7 +327,13 @@ def upload():
 
 @app.route("/download", methods=["POST"])
 def download():
-    pass
+    document_id = request.form["document_id"]
+    fetched_document = sql_quories.fetch_document(document_id)
+    print(fetched_document[0][0])
+    response = make_response(bytes(fetched_document[0][1]))
+    response.headers.set("Content-Type","application/msword")
+    response.headers.set("Content-Disposition","attachment; filename=" + fetched_document[0][0])
+    return response
 
 def strip_None_values(list_of_tuples):
     publications = []
