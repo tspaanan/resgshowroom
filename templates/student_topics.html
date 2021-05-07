@@ -60,7 +60,7 @@
             <form action="/upload" method="POST" enctype="multipart/form-data">
                 <div class="form-row">
                 <div class="col">
-                    Upload file here:
+                    <b>Upload file here:</b>
                     <br>
                     (Allowed document types: Microsoft Word (doc))
                     (Maximum document size: 5 MB)
@@ -73,11 +73,12 @@
                 </div>
             </form>
                 <div class="col">
-                    Latest file uploaded:
+                    <b>Latest file uploaded:</b>
                     <br>
                     {% if latest_document_id == None %}
                         no files uploaded
                     {% else %}
+                        <br>    
                         <form action="/download" method="POST">
                         <input type="hidden" name="document_id" value="{{ latest_document_id }}">    
                         <input type="hidden" name="topic_id" value="{{ page_id }}">
@@ -90,9 +91,10 @@
         </p>
         <p>
             <form action="/new_message" method="POST">
-                <label for="leaveComment">Leave a comment:</label>
+                <label for="leaveComment"><b>Leave a comment:</b></label>
                 <input type="hidden" name="topic_id" value="{{ page_id }}">
                 <textarea class="form-control" name="new_comment" rows="10" required></textarea>
+                <br>
                 <button type="submit" class="btn btn-primary">Send comment</button>
             </form>
         </p>
@@ -100,7 +102,7 @@
         {% if messages %}
         <p>
             <div class="table_responsive">
-                <table class="table-striped" border="1">
+                <table class="table-striped" border="1" style="width: 100%;">
                 <tr>
                 <th>Message</th><th>Time</th><th>user_id</th>
                 </tr>

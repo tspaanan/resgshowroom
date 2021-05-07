@@ -43,7 +43,8 @@
 
 {% if allow_pi or allow_member or allow_student %}
 	<p>
-		<b>Student:</b> check out some potential research topics <a href="/student_topics/0">here.</a>
+		<p style="padding-bottom:10px;"><b>Student:</b> check out some potential research topics here.</p>
+        <a class="btn btn-info" href="/student_topics/0">Student Topics</a>
 	</p>
 {% endif %}
 	
@@ -90,7 +91,7 @@
 
 	<div class="row">
 		<div class="col">
-		<p>List of publications:
+		<p><b>List of publications:</b>
 			<ul class="list-group">
 				{% for publication in publications %}
 					<li class="list-group-item">{% for data_field in publication %} {{ data_field }}{% if not loop.last %} : {% else %}. {% endif %}
@@ -98,30 +99,32 @@
 					</li>{% endfor %}
 			</ul>
 		{% if allow_pi %}
+		<br>
 		<div class="row">
-			<form action="/change_text" method="POST">
+			<p><form action="/change_text" method="POST">
 				<input type="hidden" name="page_id" value="1">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="add_new_publication" value="Add new publication">
-			</form>
-			<form action="/delete_text" method="POST">
+			</form></p>
+			<p style="padding-left: 5px;"><form action="/delete_text" method="POST">
 				<input type="hidden" name="page_id" value="1">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="delete_publication" value="Delete publication">
-			</form>
+			</form></p>
 		</div>
 		{% endif %}
 		</p>
 		</div>
 
 		<div class="col-5">
-			<p>Links to personal pages of members:
+			<p><b>Links to personal pages of members:</b>
 				<ul class="list-group">
 					{% for data_field in member_pages %}
 						<li class="list-group-item"><a href="/member_page/{{ data_field[0] }}">{{ data_field[1] }}</a>
 						</li>{% endfor %}
 				</ul>
 		{% if allow_pi or allow_member %}
+			<br>
 			<form action="/new_page" method="POST">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="add_new_page" value="Add new personal page">
@@ -133,20 +136,20 @@
 	<br>
 
 	<p>
-		Research Topics In Keywords: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
+		<b>Research Topics In Keywords:</b> {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
 		{% endfor %}
 		{% if allow_pi %}
 		<div class="row">
-			<form action="/change_text" method="POST">
+			<p><form action="/change_text" method="POST">
 				<input type="hidden" name="page_id" value="1">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="add_new_keyword" value="Add new keyword">
-			</form>
-			<form action="/delete_text" method="POST">
+			</form></p>
+			<p style="padding-left: 5px;"><form action="/delete_text" method="POST">
 				<input type="hidden" name="page_id" value="1">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="delete_keyword" value="Delete keyword">
-			</form>
+			</form></p>
 		</div>
 		{% endif %}
 	</p>
@@ -155,7 +158,7 @@
 	<p>
 		<form action="/new_message" method="POST">
 			<div class="form-group">
-				<label for="leaveFeedback">Leave a message:</label>
+				<label for="leaveFeedback"><b>Leave a message:</b></label>
 				<input type="hidden" name="page_id" value="1">
 				<textarea class="form-control" name="new_feedback" rows="10" required></textarea>
 			</div>
@@ -172,12 +175,14 @@
 		{% endif %}
 	</p>
 
-	<p> In collaboration with:<br>
+	<p><br><b>In collaboration with:</b><br>
 		<div class="row">	
 			{% for image in images %}
+			<p style="padding:20px">
 				<div class="media">
-				<img src="data:image/jpeg;base64, {{ image }}" class="mr-3" alt="logo of a collaborator" width="200" height="auto">
+					<img src="data:image/jpeg;base64, {{ image }}" class="mr-3" alt="logo of a collaborator" width="200" height="auto">
 				</div>
+			</p>
 			{% endfor %}
 		</div>
 	</p>
@@ -190,10 +195,10 @@
 			<input type="submit" class="btn btn-primary" value="Upload">
 		</form>
 		(Maximum upload size: 5 MB)
-		<form action="/delete_logo" method="POST">
+		<p style="padding-top: 5px;"><form action="/delete_logo" method="POST">
 			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 			<input type="submit" class="btn btn-primary" name="delete_logo" value="Delete logo">
-		</form>
+		</form></p>
 	{% endif %}
 
 {% endblock %}

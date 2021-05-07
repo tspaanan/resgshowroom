@@ -290,6 +290,8 @@ def student_topics(page_id):
                         allow_member=allow_member, allow_student=allow_student, topic_ids=topic_ids, page_id=page_id, \
                         topic_content=topic_content, own_topic=own_topic, messages=messages, latest_document_id=latest_document_id)
 
+#all database updates are concentrated here: each individual if-branch is entered according to update type
+#(checked against if particular form is present in request)
 @app.route("/update", methods=["POST"])
 def update():
     if not check_credentials.csrf_check(request.form["csrf_token"]):

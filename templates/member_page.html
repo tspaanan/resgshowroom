@@ -40,7 +40,8 @@
 
 {% if allow_pi or allow_member or allow_student %}
 	<p>
-		<b>Student:</b> check out some potential research topics <a href="/student_topics/0">here.</a>
+		<p style="padding-bottom:10px;"><b>Student:</b> check out some potential research topics here.</p>
+        <a class="btn btn-info" href="/student_topics/0">Student Topics</a>
 	</p>
 {% endif %}
 	
@@ -79,7 +80,7 @@
 
 	<div class="row">
 		<div class="col">
-		<p>List of publications:
+		<p><b>List of publications:</b>
 			<ul class="list-group">
 				{% for publication in publications %}
 					<li class="list-group-item">{% for data_field in publication %} {{ data_field }}{% if not loop.last %} : {% else %}. {% endif %}
@@ -87,17 +88,18 @@
 					</li>{% endfor %}
 			</ul>
 		{% if allow_pi or allow_member %}
+		<br>
 		<div class="row">
-			<form action="/change_text" method="POST">
+			<p><form action="/change_text" method="POST">
 				<input type="hidden" name="page_id" value="{{ page_id }}">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="add_new_publication" value="Add new publication">
-			</form>
-			<form action="/delete_text" method="POST">
+			</form></p>
+			<p style="padding-left: 5px;"><form action="/delete_text" method="POST">
 				<input type="hidden" name="page_id" value="{{ page_id }}">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="delete_publication" value="Delete publication">
-			</form>
+			</form></p>
 		</div>
 		{% endif %}
 		</p>
@@ -105,20 +107,20 @@
 	</div>
 
 	<p>
-		Research Topics and Other Interests: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
+		<b>Research Topics and Other Interests:</b> {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
 		{% endfor %}
 		{% if allow_pi or allow_member %}
 			<div class="row">
-				<form action="/change_text" method="POST">
+				<p><form action="/change_text" method="POST">
 					<input type="hidden" name="page_id" value="{{ page_id }}">
 					<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 					<input type="submit" class="btn btn-primary" name="add_new_keyword" value="Add new keyword">
-				</form>
-				<form action="/delete_text" method="POST">
+				</form></p>
+				<p style="padding-left: 5px;"><form action="/delete_text" method="POST">
 					<input type="hidden" name="page_id" value="{{ page_id }}">
 					<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 					<input type="submit" class="btn btn-primary" name="delete_keyword" value="Delete keyword">
-				</form>
+				</form></p>
 			</div>
 		{% endif %}
 	</p>

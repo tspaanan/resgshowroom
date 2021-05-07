@@ -103,7 +103,7 @@ def fetch_topic_content(page_id):
     return result.fetchall()
 
 def fetch_topic_ids():
-    sql = "SELECT id FROM topics WHERE visible=TRUE"
+    sql = "SELECT id FROM topics WHERE visible=TRUE ORDER BY id"
     result = db.session.execute(sql)
     return result.fetchall()
 
