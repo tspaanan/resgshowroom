@@ -60,7 +60,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    del session["username"]
+    session.clear()
     return redirect("/")
 
 @app.route("/register", methods=["GET", "POST"])

@@ -1,28 +1,12 @@
 from db import db
 from flask import session
 
-def is_pi():
-    result = common_preliminaries()
-    if result == None: return False
-    return result.fetchone()[0] == "pi"
-
-def is_member():
-    result = common_preliminaries()
-    if result == None: return False
-    return result.fetchone()[0] == "member"
-
-def is_student():
-    result = common_preliminaries()
-    if result == None: return False
-    return result.fetchone()[0] == "student"
-
-def common_preliminaries():
+def __common_preliminaries():
     try:
-        username = session["username"]
+        role = session["role"]
     except:
         return None
-    sql = "SELECT role FROM users WHERE username=:username"
-    return db.session.execute(sql, {"username":username})
+    return role
 
 def check_page_ownership(page_id):
     try:
@@ -55,3 +39,15 @@ def check_username(username):
 
 def csrf_check(form_csrf_token):
     return session["csrf_token"] == form_csrf_token
+
+def is_pi():
+    result = __common_preliminaries()
+    return result == "pi"
+
+def is_member():
+    result = __common_preliminaries()
+    return result == "member"
+
+def is_student():
+    result = __common_preliminaries()
+    return result == "student"
