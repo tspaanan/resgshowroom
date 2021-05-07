@@ -1,43 +1,52 @@
 {% extends "layout.html" %}
-    <title>{% block title %}member page{% endblock %}</title>
+    
+<title>{% block title %}member page{% endblock %}</title>
 
-	{% block sidebar %}
+{% block sidebar %}
 
-	{% if session.username %}
-		<li class="nav-item"><p>You are logged in.</li>
-		<li class="nav-item"
-			><form action="/logout">
-				<input type="submit" class="btn btn-primary" value="Logout">
-			</form>
-		</li>
-		<p><br>(debug) Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
-	{% endif %}</p>
-	{% else %}
-		<li class="nav-item">
-			<h4>Login:</h4>
-			<form action="/login" method="POST">
-				<div class="form-group">
-					<label for="inputUsername">Username:</label>
-					<input type="text" class="form-control" name="username" required>
-				</div>
-				<div class="form-group">
-					<label for="inputPassword">Password:</label>
-					<input type="password" class="form-control" name="password" required>
-				</div>
-				<div class="form-group">
-					<button type="submit" class="btn btn-primary">Login</button>
-				</div>
-			</form>
-		</li>
-		<li class="nav-item"><p>Are you a student? <a href="/register">Register here.</a></p></li>
-	{% endif %}
-	{% if allow_pi or allow_member or allow_student %}
-		<p><b>Student:</b> check out some potential research topics <a href="/student_topics/0">here.</a></p>
-	{% endif %}
+{% if session.username %}
+	<li class="nav-item">
+		<p>You are logged in.</p>
+	</li>
+	<li class="nav-item"
+		><form action="/logout">
+			<input type="submit" class="btn btn-primary" value="Logout">
+		</form>
+	</li>
+	<p>
+		<br>(debug) Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
+	</p>
+{% endif %}
+
+{% else %}
+	<li class="nav-item">
+		<h4>Login:</h4>
+		<form action="/login" method="POST">
+			<div class="form-group">
+				<label for="inputUsername">Username:</label>
+				<input type="text" class="form-control" name="username" required>
+			</div>
+			<div class="form-group">
+				<label for="inputPassword">Password:</label>
+				<input type="password" class="form-control" name="password" required>
+			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Login</button>
+			</div>
+		</form>
+	</li>
+	<li class="nav-item"><p>Are you a student? <a href="/register">Register here.</a></p></li>
+{% endif %}
+
+{% if allow_pi or allow_member or allow_student %}
+	<p>
+		<b>Student:</b> check out some potential research topics <a href="/student_topics/0">here.</a>
+	</p>
+{% endif %}
 	
-	{% endblock %}
+{% endblock %}
 
-	{% block content %}
+{% block content %}
 
 	<div class="jumbotron">
 		<h1 class="display-4">{{ name }}</h1>
@@ -54,7 +63,8 @@
 	</div>
 
 	<br>
-	<p>{{ introductory_text }}
+	<p>
+		{{ introductory_text }}
 	
 	{% if allow_pi or allow_member %}
 		<form action="/change_text" method="POST">
@@ -93,23 +103,24 @@
 		</p>
 		</div>
 	</div>
+
 	<p>
 		Research Topics and Other Interests: {% for keyword in keywords %} {{ keyword[0] }}{% if not loop.last %}, {% endif %}
 		{% endfor %}
 		{% if allow_pi or allow_member %}
-		<div class="row">
-			<form action="/change_text" method="POST">
-				<input type="hidden" name="page_id" value="{{ page_id }}">
-				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-				<input type="submit" class="btn btn-primary" name="add_new_keyword" value="Add new keyword">
-			</form>
-			<form action="/delete_text" method="POST">
-				<input type="hidden" name="page_id" value="{{ page_id }}">
-				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-				<input type="submit" class="btn btn-primary" name="delete_keyword" value="Delete keyword">
-			</form>
-		</div>
+			<div class="row">
+				<form action="/change_text" method="POST">
+					<input type="hidden" name="page_id" value="{{ page_id }}">
+					<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+					<input type="submit" class="btn btn-primary" name="add_new_keyword" value="Add new keyword">
+				</form>
+				<form action="/delete_text" method="POST">
+					<input type="hidden" name="page_id" value="{{ page_id }}">
+					<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+					<input type="submit" class="btn btn-primary" name="delete_keyword" value="Delete keyword">
+				</form>
+			</div>
 		{% endif %}
 	</p>
 	
-	{% endblock %}
+{% endblock %}

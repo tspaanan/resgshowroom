@@ -1,69 +1,81 @@
 {% extends "layout.html" %}
-	<title>{% block title %}test version{% endblock %}</title>
 
-	{% block sidebar %}
+<title>{% block title %}test version{% endblock %}</title>
 
-	{% if session.username %}<!--Can I pass info on session.username to layout.html as well?
-	In case that would be possible, duplicate html-code from member_page.html could be moved to layout.html-->
-		<li class="nav-item"><p>You are logged in.</li>
-		<li class="nav-item"
-			><form action="/logout">
-				<input type="submit" class="btn btn-primary" value="Logout">
-			</form>
-		</li>
-		<p><br>(debug) Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
-	{% endif %}</p>
-	{% else %}
-		<li class="nav-item">
-			<h4>Login:</h4>
-			<form action="/login" method="POST">
-				<div class="form-group">
-					<label for="inputUsername">Username:</label>
-					<input type="text" class="form-control" name="username" required>
-				</div>
-				<div class="form-group">
-					<label for="inputPassword">Password:</label>
-					<input type="password" class="form-control" name="password" required>
-				</div>
-				<div class="form-group">
-					<button type="submit" class="btn btn-primary">Login</button>
-				</div>
-			</form>
-		</li>
-		<li class="nav-item"><p>Are you a student? <a href="/register">Register here.</a></p></li>
-	{% endif %}
-	{% if allow_pi or allow_member or allow_student %}
-		<p><b>Student:</b> check out some potential research topics <a href="/student_topics/0">here.</a></p>
-	{% endif %}
+{% block sidebar %}
+
+{% if session.username %}
+	<li class="nav-item">
+		<p>You are logged in.</p>
+	</li>
+	<li class="nav-item"
+		><form action="/logout">
+			<input type="submit" class="btn btn-primary" value="Logout">
+		</form>
+	</li>
+	<p>
+		<br>(debug) Current role: {% if allow_pi %}PI (primary investigator) {% elif allow_member %} Member {% elif allow_student %} Student
+	</p>
+{% endif %}
+
+{% else %}
+	<li class="nav-item">
+		<h4>Login:</h4>
+		<form action="/login" method="POST">
+			<div class="form-group">
+				<label for="inputUsername">Username:</label>
+				<input type="text" class="form-control" name="username" required>
+			</div>
+			<div class="form-group">
+				<label for="inputPassword">Password:</label>
+				<input type="password" class="form-control" name="password" required>
+			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Login</button>
+			</div>
+		</form>
+	</li>
+	<li class="nav-item">
+		<p>Are you a student? <a href="/register">Register here.</a>
+		</p>
+	</li>
+{% endif %}
+
+{% if allow_pi or allow_member or allow_student %}
+	<p>
+		<b>Student:</b> check out some potential research topics <a href="/student_topics/0">here.</a>
+	</p>
+{% endif %}
 	
-	{% endblock %}
+{% endblock %}
 
-	{% block content %}
+{% block content %}
 
-	{% if feedback_left %}
+{% if feedback_left %}
 	<div class="alert alert-success" role="alert" id="feedback_success">
 		<h4 class="alert-heading">Thank You for Your Feedback!</h4>
 		<hr>
 		<p>If you asked to be contacted, we will get back to you as soon as we may.</p>
 	</div>
-	{% endif %}
+{% endif %}
 
 	<div class="jumbotron">
 		<h1 class="display-4">{{ name }}</h1>
 		<hr>
 
-		{% if allow_pi %}
-			<form action="/change_text" method="POST">
-		        <input type="hidden" name="page_id" value="1">
-				<input type="hidden" name="old_text" value="{{ name }}">
-				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-				<input type="submit" class="btn btn-primary" name="change_name" value="Change">
-			</form>
-		{% endif %}
+	{% if allow_pi %}
+		<form action="/change_text" method="POST">
+			<input type="hidden" name="page_id" value="1">
+			<input type="hidden" name="old_text" value="{{ name }}">
+			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+			<input type="submit" class="btn btn-primary" name="change_name" value="Change">
+		</form>
+	{% endif %}
 	</div>
 
 	<br>
-	<p>{{ introductory_text }}
+	<p>
+		{{ introductory_text }}
 	
 	{% if allow_pi %}
 		<form action="/change_text" method="POST">
@@ -103,19 +115,19 @@
 		</div>
 
 		<div class="col-5">
-		<p>Links to personal pages of members:
-			<ul class="list-group">
-				{% for data_field in member_pages %}
-					<li class="list-group-item"><a href="/member_page/{{ data_field[0] }}">{{ data_field[1] }}</a>
-					</li>{% endfor %}
-			</ul>
+			<p>Links to personal pages of members:
+				<ul class="list-group">
+					{% for data_field in member_pages %}
+						<li class="list-group-item"><a href="/member_page/{{ data_field[0] }}">{{ data_field[1] }}</a>
+						</li>{% endfor %}
+				</ul>
 		{% if allow_pi or allow_member %}
 			<form action="/new_page" method="POST">
 				<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 				<input type="submit" class="btn btn-primary" name="add_new_page" value="Add new personal page">
 			</form>
 		{% endif %}
-		</p>
+			</p>
 		</div>
 	</div>
 	<br>
@@ -163,12 +175,13 @@
 	<p> In collaboration with:<br>
 		<div class="row">	
 			{% for image in images %}
-			<div class="media">
-			<img src="data:image/jpeg;base64, {{ image }}" class="mr-3" alt="logo of a collaborator" width="200" height="auto">
-			</div>
+				<div class="media">
+				<img src="data:image/jpeg;base64, {{ image }}" class="mr-3" alt="logo of a collaborator" width="200" height="auto">
+				</div>
 			{% endfor %}
 		</div>
 	</p>
+
 	{% if allow_pi %}
 		<form action="/upload" method="POST" enctype="multipart/form-data">
 			Upload new logo here: <input type="file" name="upload_logo">
@@ -177,9 +190,9 @@
 			<input type="submit" class="btn btn-primary" value="Upload">
 		</form>
 		<form action="/delete_logo" method="POST">
-		<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-		<input type="submit" class="btn btn-primary" name="delete_logo" value="Delete logo">
+			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+			<input type="submit" class="btn btn-primary" name="delete_logo" value="Delete logo">
 		</form>
 	{% endif %}
 
-	{% endblock %}
+{% endblock %}

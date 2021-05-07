@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
-    <title>{% block title %}new member page{% endblock %}</title>
+
+<title>{% block title %}new member page{% endblock %}</title>
 
 {% block content %}
 
@@ -12,18 +13,8 @@
             <textarea class="form-control" name="new_description" rows="10" required></textarea>
 			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <br>
-            SPACE RESERVED FOR KEYWORD ADDITION (POSSIBLE TO PICK EXISTING KEYWORDS)
-            <br>
-            SPACE RESERVED FOR PUBLICATION ADDITION (POSSIBLE TO PICK EXISTING PUBLICATIONS)
-            <br>
-            SPACE RESERVED FOR DATA ADDITION
-            <br>
             <input type="submit" class="btn btn-primary" value="Create new topic">
         </div>
     </form>
 
 {% endblock %}
-
-<!--TODO: write validation script with bootstrap-->
-<script>
-</script>

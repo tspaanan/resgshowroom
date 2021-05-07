@@ -331,7 +331,7 @@ def upload():
                 document_data = document_file.read()
                 sql_quories.insert_file(document_filename, document_data, topic_id, session["username"])
                 return redirect("/student_topics/" + str(topic_id))
-            else: return render_template("error.html", error="only doc and docx files are allowed")
+            else: return render_template("error.html", error="only doc files are allowed")
     elif "upload_logo" in request.files:
         if check_credentials.is_pi():
             logo_file = request.files["upload_logo"]

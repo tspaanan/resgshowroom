@@ -1,20 +1,21 @@
 {% extends "layout.html" %}
-    <title>{% block title %}delete text{% endblock %}</title>
+
+<title>{% block title %}delete text{% endblock %}</title>
 
 {% block content %}
 
 {% if (allow_pi or allow_member) and form == "delete_publication" %}
     <form action="/update" method="POST">
-    <div class="table_responsive">
-        <table class="table-striped" border="1">
-            <tr>
-                <th>Select publications for removal:</th>
-            </tr>
-            {% for publication in publications %}
-                <tr><td> <input type="checkbox" name="{{ publication[0] }}"> {{ publication[0] }}</td></tr>
-            {% endfor %}
-        </table>
-    </div>
+        <div class="table_responsive">
+            <table class="table-striped" border="1">
+                <tr>
+                    <th>Select publications for removal:</th>
+                </tr>
+                {% for publication in publications %}
+                    <tr><td> <input type="checkbox" name="{{ publication[0] }}"> {{ publication[0] }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
 			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <input type="hidden" name="delete_publication" value="">
             <input type="hidden" name="page_id" value="{{ page_id }}">
@@ -23,16 +24,16 @@
 
 {% elif (allow_pi or allow_member) and form == "delete_keyword" %}
     <form action="/update" method="POST">
-    <div class="table_responsive">
-        <table class="table-striped" border="1">
-            <tr>
-                <th>Select keywords for removal:</th>
-            </tr>
-            {% for keyword in keywords %}
-                <tr><td> <input type="checkbox" name="{{ keyword[0] }}"> {{ keyword[0] }}</td></tr>
-            {% endfor %}
-        </table>
-    </div>
+        <div class="table_responsive">
+            <table class="table-striped" border="1">
+                <tr>
+                    <th>Select keywords for removal:</th>
+                </tr>
+                {% for keyword in keywords %}
+                    <tr><td> <input type="checkbox" name="{{ keyword[0] }}"> {{ keyword[0] }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
 			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <input type="hidden" name="delete_keyword" value="">
             <input type="hidden" name="page_id" value="{{ page_id }}">
@@ -41,20 +42,20 @@
 
 {% elif allow_pi and form == "delete_logo" %}
     <form action="/update" method="POST">
-    <div class="table_responsive">
-        <table class="table-striped" border="1">
-            <tr>
-                <th>Select logos for removal:</th>
-            </tr>
-            {% for logo_id, logo in combined_logo_info %}
-                <tr><td><input type="checkbox" name="{{ logo_id[0] }}">
-			<div class="media">
-			<img src="data:image/jpeg;base64, {{ logo }}" class="mr-3" alt="logo of a collaborator" width="200" height="auto">
-			</div>
-            </td></tr>
-            {% endfor %}
-        </table>
-    </div>
+        <div class="table_responsive">
+            <table class="table-striped" border="1">
+                <tr>
+                    <th>Select logos for removal:</th>
+                </tr>
+                {% for logo_id, logo in combined_logo_info %}
+                    <tr><td><input type="checkbox" name="{{ logo_id[0] }}">
+                <div class="media">
+                <img src="data:image/jpeg;base64, {{ logo }}" class="mr-3" alt="logo of a collaborator" width="200" height="auto">
+                </div>
+                </td></tr>
+                {% endfor %}
+            </table>
+        </div>
 			<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             <input type="hidden" name="delete_logo" value="">
             <input type="submit" class="btn btn-primary" value="Delete selected logos">

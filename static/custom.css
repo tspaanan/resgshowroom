@@ -1,10 +1,12 @@
+a {
+    color:darkcyan;
+}
+
 body {
     font-family:Arial, Helvetica, sans-serif;
     color: #555;
 }
+
 .bg-primary { color:gainsboro;}
+
 .btn { color:darkcyan; background-color:aliceblue;}
-a {
-    color:darkcyan;
-}
-.pagination {color:red; background-color:aliceblue;}
