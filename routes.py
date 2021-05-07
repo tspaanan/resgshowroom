@@ -357,7 +357,6 @@ def upload():
             document_filename = secure_filename(document_file.filename)
             if len(document_filename) == 0:
                 return render_template("error.html", error="no file to upload")
-            #TODO: document size check?
             if document_file.mimetype == "application/msword":
                 document_data = document_file.read()
                 sql_quories.insert_file(document_filename, document_data, topic_id, session["username"])
@@ -369,7 +368,6 @@ def upload():
             logo_filename = secure_filename(logo_file.filename)
             if len(logo_filename) == 0:
                 return render_template("error.html", error="no file to upload")
-            #TODO: document size check?
             if logo_file.mimetype == "image/jpeg":
                 logo_b64 = str(base64.b64encode(logo_file.read()))
                 sql_quories.insert_logo(logo_filename, logo_b64[2:-1]) #logo inserted without b' at the front and ' at the end
