@@ -26,6 +26,11 @@ def archive_message(message_id):
     db.session.execute(sql, {"message_id":message_id})
     db.session.commit()
 
+def fetch_document(document_id):
+    sql = "SELECT name, data FROM documents WHERE id=:document_id"
+    result = db.session.execute(sql, {"document_id":document_id})
+    return result.fetchall()
+
 def fetch_feedback(archived):
     sql = "SELECT id,message,time FROM messages WHERE archived=:archived AND page_id=1 AND visible=TRUE"
     result = db.session.execute(sql, {"archived":archived})
@@ -53,11 +58,6 @@ def fetch_keywords(page_id):
     sql = "SELECT keyword FROM keywords KW,page_keywords PK WHERE KW.id=PK.keyword_id \
            AND PK.page_id=:page_id AND KW.visible=TRUE"
     result = db.session.execute(sql, {"page_id":page_id})
-    return result.fetchall()
-
-def fetch_document(document_id):
-    sql = "SELECT name, data FROM documents WHERE id=:document_id"
-    result = db.session.execute(sql, {"document_id":document_id})
     return result.fetchall()
 
 def fetch_latest_document_id(topic_id):
@@ -97,14 +97,14 @@ def fetch_title(page_id):
     result = db.session.execute(sql, {"page_id":page_id})
     return result.fetchone()[0]
 
-def fetch_topic_ids():
-    sql = "SELECT id FROM topics WHERE visible=TRUE"
-    result = db.session.execute(sql)
-    return result.fetchall()
-
 def fetch_topic_content(page_id):
     sql = "SELECT topic,description,responsible_user_id,chosen FROM topics WHERE id=:page_id AND visible=TRUE"
     result = db.session.execute(sql, {"page_id":page_id})
+    return result.fetchall()
+
+def fetch_topic_ids():
+    sql = "SELECT id FROM topics WHERE visible=TRUE"
+    result = db.session.execute(sql)
     return result.fetchall()
 
 def fetch_topics():
@@ -171,6 +171,21 @@ def insert_user(username, password, role):
     db.session.execute(sql, {"username":username, "password":password, "role":role})
     db.session.commit()
 
+def remove_keyword(keyword):
+    sql = "UPDATE keywords SET visible=FALSE WHERE keyword=:keyword"
+    db.session.execute(sql, {"keyword":keyword})
+    db.session.commit()
+
+def remove_logo(id):
+    sql = "UPDATE images SET visible=FALSE WHERE id=:id"
+    db.session.execute(sql, {"id":id})
+    db.session.commit()
+
+def remove_publication(title):
+    sql = "UPDATE publications SET visible=FALSE WHERE title=:title"
+    db.session.execute(sql, {"title":title})
+    db.session.commit()
+
 def reserve_topic(session, topic_id):
     sql = "SELECT id FROM users WHERE username=:username"
     result = db.session.execute(sql, {"username":session["username"]})
@@ -186,19 +201,4 @@ def update_introduction(introduction, page_id):
 def update_title(title, page_id):
     sql = "UPDATE pages SET title=:new_title WHERE id=:page_id"
     db.session.execute(sql, {"new_title":title, "page_id":page_id})
-    db.session.commit()
-
-def remove_publication(title):
-    sql = "UPDATE publications SET visible=FALSE WHERE title=:title"
-    db.session.execute(sql, {"title":title})
-    db.session.commit()
-
-def remove_keyword(keyword):
-    sql = "UPDATE keywords SET visible=FALSE WHERE keyword=:keyword"
-    db.session.execute(sql, {"keyword":keyword})
-    db.session.commit()
-
-def remove_logo(id):
-    sql = "UPDATE images SET visible=FALSE WHERE id=:id"
-    db.session.execute(sql, {"id":id})
     db.session.commit()
