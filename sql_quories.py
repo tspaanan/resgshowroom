@@ -85,7 +85,7 @@ def fetch_publications(page_id):
            page_no,doi FROM publications P,page_publications PP WHERE \
            P.id=PP.publication_id AND PP.page_id=:page_id AND P.visible=TRUE"
     result = db.session.execute(sql, {"page_id":page_id})
-    return result.fetchall()
+    return strip_None_values(result.fetchall()) #removing None-values from publications for easy displaying
 
 def fetch_role(username):
     sql = "SELECT role FROM users WHERE username=:username"
@@ -202,3 +202,12 @@ def update_title(title, page_id):
     sql = "UPDATE pages SET title=:new_title WHERE id=:page_id"
     db.session.execute(sql, {"new_title":title, "page_id":page_id})
     db.session.commit()
+
+def strip_None_values(list_of_tuples):
+    publications = []
+    for tuple in list_of_tuples:
+        tuple_replacement = []
+        for data_field in tuple:
+            if data_field: tuple_replacement.append(data_field)
+        publications.append(tuple_replacement)
+    return publications

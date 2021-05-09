@@ -10,15 +10,6 @@ import re
 import check_credentials
 import sql_quories
 
-def __strip_None_values(list_of_tuples):
-    publications = []
-    for tuple in list_of_tuples:
-        tuple_replacement = []
-        for data_field in tuple:
-            if data_field: tuple_replacement.append(data_field)
-        publications.append(tuple_replacement)
-    return publications
-
 @app.route("/")
 def index():
     name = sql_quories.fetch_title(1)
@@ -30,8 +21,7 @@ def index():
     allow_student = check_credentials.is_student()
 
     keywords = sql_quories.fetch_keywords(1)
-    publications_all = sql_quories.fetch_publications(1)
-    publications = __strip_None_values(publications_all) #removing None-values from publications for easy displaying
+    publications = sql_quories.fetch_publications(1)
     member_pages = sql_quories.fetch_member_pages()
     images = sql_quories.fetch_images()
 
@@ -113,8 +103,7 @@ def delete_text():
     allow_member = check_credentials.is_member()
     
     if "delete_publication" in request.form:
-        publications_all = sql_quories.fetch_publications(page_id)
-        publications = __strip_None_values(publications_all)
+        publications = sql_quories.fetch_publications(page_id)
         return render_template("delete_text.html", publications=publications, allow_pi=allow_pi, allow_member=allow_member,
                                 form="delete_publication", page_id=page_id)
     
@@ -168,8 +157,7 @@ def member_page(page_id):
     name = sql_quories.fetch_title(page_id)
     introductory_text = sql_quories.fetch_introduction(page_id)
     keywords = sql_quories.fetch_keywords(page_id)
-    publications_all = sql_quories.fetch_publications(page_id)
-    publications = __strip_None_values(publications_all)
+    publications = sql_quories.fetch_publications(page_id)
     allow_pi = check_credentials.is_pi()
     allow_member = check_credentials.check_page_ownership(page_id)
     allow_student = check_credentials.is_student()
