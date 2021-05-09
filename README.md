@@ -18,7 +18,7 @@ Sovelluksella on neljä eri käyttäjäryhmää:
 * käyttäjäni: member + lukuarvo väliltä 3 ja 6
 * salasana: pass + sama lukuarvo väliltä 3 ja 6
 
-Tutkimusryhmän jäsenenä voit luoda oman henkilökohtaisen alasivun kaikkien alasivujen listauksen alapuolelta ("Add new personal page"). Omalle alasivullesi voit lisätä tai poistaa julkaisujasi ja tutkimustasi kuvaavia asiasanoja. Lisäksi voit opinnäytteiden aiheiden [pääsivulla](http://resgshowroom.herokuapp.com/student_topics/0) lisätä uuden aiheen, jonka vastuuhenkilöksi asetut. Voit jättää oman vastualueesi aiheisiin kommentteja ja palautetta niille opiskelijoille, jotka työskentelevät aiheen parissa, upata dokumentteja sekä ladata viimeisimmäksi upatun dokumentin.
+Tutkimusryhmän jäsenenä voit luoda oman henkilökohtaisen alasivun kaikkien alasivujen listauksen alapuolelta ("Add new personal page"). Testatessa huomaa, että member3 omaa jo oman alasivun ([Duis Sagittis](http://resgshowroom.herokuapp.com/member_page/3)), mutta ryhmän jäsenet eivät. Omalle alasivullesi voit lisätä tai poistaa julkaisujasi ja tutkimustasi kuvaavia asiasanoja. Julkaisujen ja asiasanojen poistamisen jälkeen ohjaudut takaisin koko sovelluksen etusivulle. Lisäksi voit opinnäytteiden aiheiden [pääsivulla](http://resgshowroom.herokuapp.com/student_topics/0) lisätä uuden aiheen, jonka vastuuhenkilöksi asetut. Voit jättää oman vastualueesi aiheisiin kommentteja ja palautetta niille opiskelijoille, jotka työskentelevät aiheen parissa, upata dokumentteja sekä ladata viimeisimmäksi upatun dokumentin.
 
 4. Tutkimusryhmän johtaja (PI eli primary investigator): voit kirjautua sisään tutkimusryhmän johtajana seuraavalla tunnuksella:
 * käyttäjänimi: pi
